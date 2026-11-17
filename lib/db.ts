@@ -157,5 +157,18 @@ export async function initDb() {
       issues JSONB NOT NULL DEFAULT '[]',
       checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS topic_map (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL,
+      run_id INTEGER NOT NULL,
+      brand_id INTEGER NOT NULL,
+      topic TEXT NOT NULL,
+      topic_category TEXT NOT NULL,
+      mention_rate REAL NOT NULL DEFAULT 0,
+      avg_position REAL,
+      query_count INTEGER NOT NULL DEFAULT 0,
+      authority_score REAL NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 }

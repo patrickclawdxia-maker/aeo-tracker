@@ -13,6 +13,7 @@ import { ContentGapsTab } from "./components/ContentGapsTab";
 import { ClustersTab } from "./components/ClustersTab";
 import { CrawlersTab } from "./components/CrawlersTab";
 import { AccuracyTab } from "./components/AccuracyTab";
+import { AuthorityMapTab } from "./components/AuthorityMapTab";
 
 interface ProjectData {
   project: { id: number; name: string; created_at: string };
@@ -64,7 +65,7 @@ interface SovData {
   sov_change: number | null;
 }
 
-type TabId = "overview" | "engines" | "queries" | "clusters" | "trends" | "citations" | "crawlers" | "competitors" | "gaps" | "accuracy" | "settings";
+type TabId = "overview" | "engines" | "queries" | "clusters" | "trends" | "citations" | "crawlers" | "competitors" | "authority" | "gaps" | "accuracy" | "settings";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -75,6 +76,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "citations", label: "Citations" },
   { id: "crawlers", label: "Crawlers" },
   { id: "competitors", label: "Competitors" },
+  { id: "authority", label: "Authority Map" },
   { id: "gaps", label: "Content Gaps" },
   { id: "accuracy", label: "Accuracy" },
   { id: "settings", label: "Settings" },
@@ -295,6 +297,9 @@ export default function ProjectPage({
       )}
       {tab === "competitors" && (
         <CompetitorsTab projectId={project.project.id} />
+      )}
+      {tab === "authority" && (
+        <AuthorityMapTab projectId={project.project.id} brands={project.brands} />
       )}
       {tab === "gaps" && (
         <ContentGapsTab projectId={project.project.id} />

@@ -121,5 +121,41 @@ export async function initDb() {
       reason TEXT NOT NULL,
       granted_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+    CREATE TABLE IF NOT EXISTS query_clusters (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      description TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS query_cluster_members (
+      id SERIAL PRIMARY KEY,
+      cluster_id INTEGER NOT NULL,
+      query_id INTEGER NOT NULL,
+      UNIQUE(cluster_id, query_id)
+    );
+    CREATE TABLE IF NOT EXISTS crawler_checks (
+      id SERIAL PRIMARY KEY,
+      project_id INTEGER NOT NULL,
+      domain TEXT NOT NULL,
+      checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      robots_txt TEXT,
+      crawler_statuses JSONB NOT NULL DEFAULT '{}'
+    );
+    CREATE TABLE IF NOT EXISTS brand_facts (
+      id SERIAL PRIMARY KEY,
+      brand_id INTEGER NOT NULL UNIQUE,
+      facts TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS accuracy_checks (
+      id SERIAL PRIMARY KEY,
+      raw_response_id INTEGER NOT NULL,
+      brand_id INTEGER NOT NULL,
+      run_id INTEGER NOT NULL,
+      accurate BOOLEAN NOT NULL,
+      issues JSONB NOT NULL DEFAULT '[]',
+      checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 }

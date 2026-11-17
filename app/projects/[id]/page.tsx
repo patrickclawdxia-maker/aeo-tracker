@@ -10,6 +10,9 @@ import { TrendsTab } from "./components/TrendsTab";
 import { CitationsTab } from "./components/CitationsTab";
 import { CompetitorsTab } from "./components/CompetitorsTab";
 import { ContentGapsTab } from "./components/ContentGapsTab";
+import { ClustersTab } from "./components/ClustersTab";
+import { CrawlersTab } from "./components/CrawlersTab";
+import { AccuracyTab } from "./components/AccuracyTab";
 
 interface ProjectData {
   project: { id: number; name: string; created_at: string };
@@ -61,16 +64,19 @@ interface SovData {
   sov_change: number | null;
 }
 
-type TabId = "overview" | "engines" | "queries" | "trends" | "citations" | "competitors" | "gaps" | "settings";
+type TabId = "overview" | "engines" | "queries" | "clusters" | "trends" | "citations" | "crawlers" | "competitors" | "gaps" | "accuracy" | "settings";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "engines", label: "By Engine" },
   { id: "queries", label: "Queries" },
+  { id: "clusters", label: "Clusters" },
   { id: "trends", label: "Trends" },
   { id: "citations", label: "Citations" },
+  { id: "crawlers", label: "Crawlers" },
   { id: "competitors", label: "Competitors" },
   { id: "gaps", label: "Content Gaps" },
+  { id: "accuracy", label: "Accuracy" },
   { id: "settings", label: "Settings" },
 ];
 
@@ -292,6 +298,15 @@ export default function ProjectPage({
       )}
       {tab === "gaps" && (
         <ContentGapsTab projectId={project.project.id} />
+      )}
+      {tab === "clusters" && (
+        <ClustersTab projectId={project.project.id} queries={project.queries} />
+      )}
+      {tab === "crawlers" && (
+        <CrawlersTab projectId={project.project.id} />
+      )}
+      {tab === "accuracy" && (
+        <AccuracyTab projectId={project.project.id} />
       )}
       {tab === "settings" && (
         <SettingsTab

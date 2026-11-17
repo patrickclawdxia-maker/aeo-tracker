@@ -1,5 +1,5 @@
 const POE_BASE_URL = "https://api.poe.com/v1";
-const POE_API_KEY = "***REDACTED***";
+const POE_API_KEY = process.env.POE_API_KEY ?? "";
 
 export async function queryEngine(
   model: string,

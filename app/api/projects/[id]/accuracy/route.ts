@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
+import { track } from "@/lib/analytics";
 
 const POE_API_KEY = process.env.POE_API_KEY ?? "";
 const POE_BASE_URL = "https://api.poe.com/v1";
@@ -147,7 +148,7 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await verifyProjectOwnership(params.id);
+  const { error, userId } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
   const projectId = parseInt(params.id);
@@ -231,6 +232,8 @@ export async function POST(
 
   // Don't warn about unused variable
   void brandNames;
+
+  await track("accuracy_check_run", "feature", { projectId }, userId);
 
   return NextResponse.json({
     success: true,

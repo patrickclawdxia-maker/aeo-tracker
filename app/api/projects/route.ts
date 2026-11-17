@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool, ensureDb } from "@/lib/pool";
 import { getAuthSession } from "@/lib/auth-helpers";
+import { track } from "@/lib/analytics";
 
 export async function GET() {
   const { userId, error } = await getAuthSession();
@@ -40,5 +41,8 @@ export async function POST(req: NextRequest) {
     "INSERT INTO projects (name, user_id) VALUES ($1, $2) RETURNING *",
     [name.trim(), userId]
   );
+
+  await track("project_created", "project", { name: name.trim() }, userId);
+
   return NextResponse.json(rows[0], { status: 201 });
 }

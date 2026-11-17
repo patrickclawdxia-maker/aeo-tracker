@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useTrack } from "@/app/components/Analytics";
 import { OverviewTab } from "./components/OverviewTab";
 import { ByEngineTab } from "./components/ByEngineTab";
 import { QueriesTab } from "./components/QueriesTab";
@@ -88,6 +89,7 @@ export default function ProjectPage({
   params: { id: string };
 }) {
   const [tab, setTab] = useState<TabId>("overview");
+  const trackEvent = useTrack();
   const [project, setProject] = useState<ProjectData | null>(null);
   const [results, setResults] = useState<ResultsData | null>(null);
   const [sovData, setSovData] = useState<SovData[]>([]);
@@ -267,7 +269,7 @@ export default function ProjectPage({
         {TABS.map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => { setTab(t.id); trackEvent("tab_viewed", "navigation", { tab: t.id, projectId: params.id }); }}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
               tab === t.id
                 ? "border-indigo-500 text-indigo-400"

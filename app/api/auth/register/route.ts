@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { pool, ensureDb } from "@/lib/pool";
+import { track } from "@/lib/analytics";
 
 export async function POST(req: NextRequest) {
   const { name, email, password } = await req.json();
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest) {
     "INSERT INTO users (email, name, password_hash) VALUES ($1, $2, $3)",
     [email.toLowerCase().trim(), name?.trim() ?? null, passwordHash]
   );
+
+  await track("user_registered", "auth", { email: email.toLowerCase().trim() });
 
   return NextResponse.json({ success: true }, { status: 201 });
 }

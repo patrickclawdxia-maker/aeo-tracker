@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
+import { track } from "@/lib/analytics";
 
 export async function GET(
   _req: NextRequest,
@@ -37,9 +38,12 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await verifyProjectOwnership(params.id);
+  const { error, userId } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
   await pool.query("DELETE FROM projects WHERE id = $1", [params.id]);
+
+  await track("project_deleted", "project", { projectId: params.id }, userId);
+
   return NextResponse.json({ success: true });
 }

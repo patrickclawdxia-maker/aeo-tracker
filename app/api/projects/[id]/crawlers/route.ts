@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 import { AI_CRAWLERS } from "@/lib/ai-crawlers";
+import { track } from "@/lib/analytics";
 
 type CrawlerStatus = "allowed" | "blocked" | "not_mentioned";
 
@@ -107,7 +108,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await verifyProjectOwnership(params.id);
+  const { error, userId } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
   const projectId = parseInt(params.id);
@@ -151,6 +152,8 @@ export async function POST(
      RETURNING checked_at`,
     [projectId, cleanDomain, robotsTxt, JSON.stringify(crawlerStatuses)]
   );
+
+  await track("crawler_check_run", "feature", { projectId: params.id, domain: cleanDomain }, userId);
 
   return NextResponse.json({
     domain: cleanDomain,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
+import { track } from "@/lib/analytics";
 
 const POE_BASE_URL = "https://api.poe.com/v1";
 const POE_API_KEY = process.env.POE_API_KEY ?? "";
@@ -80,7 +81,7 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await verifyProjectOwnership(params.id);
+  const { error, userId } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
   const projectId = parseInt(params.id);
@@ -234,6 +235,8 @@ export async function POST(
       ]
     );
   }
+
+  await track("authority_map_built", "feature", { projectId, topicCount: Object.keys(topicsMap).length }, userId);
 
   // Return structured map data
   return NextResponse.json(buildMapResponse(entries, brands, runId));

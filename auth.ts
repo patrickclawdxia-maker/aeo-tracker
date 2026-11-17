@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
+import { track } from "@/lib/analytics";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -89,6 +90,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Store db user id in user object for jwt callback
         (user as { id: string }).id = String(dbUser.id);
+
+        await track("user_signed_in", "auth", { provider: "google" }, dbUser.id);
       }
       return true;
     },

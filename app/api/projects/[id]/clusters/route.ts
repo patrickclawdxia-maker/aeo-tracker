@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
+import { track } from "@/lib/analytics";
 
 export async function GET(
   _req: NextRequest,
@@ -115,7 +116,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { error } = await verifyProjectOwnership(params.id);
+  const { error, userId } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
   const projectId = parseInt(params.id);
@@ -150,6 +151,9 @@ export async function POST(
     }
 
     await client.query("COMMIT");
+
+    await track("cluster_created", "feature", { projectId: params.id, name }, userId);
+
     return NextResponse.json({ id: clusterId, name, description, queryIds }, { status: 201 });
   } catch (err) {
     await client.query("ROLLBACK");

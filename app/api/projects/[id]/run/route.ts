@@ -5,6 +5,7 @@ import { queryEngine, sleep } from "@/lib/poe";
 import { parseResponse } from "@/lib/parser";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 import { consumeQuota, getQuotaStatus } from "@/lib/quota";
+import { track } from "@/lib/analytics";
 
 const ITERATIONS = 3;
 
@@ -89,6 +90,8 @@ export async function POST(
     [projectId]
   );
   const runId = runRows[0].id as number;
+
+  await track("run_started", "run", { projectId, queryCount: queries.length, brandCount: brands.length }, effectiveUserId);
 
   const progress: string[] = [];
   const errors: string[] = [];
@@ -230,6 +233,8 @@ export async function POST(
       { status: 500 }
     );
   }
+
+  await track("run_completed", "run", { projectId, runId, totalCalls, errorCount: errors.length }, effectiveUserId);
 
   return NextResponse.json({
     success: true,

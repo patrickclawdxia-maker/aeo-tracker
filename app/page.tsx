@@ -140,50 +140,46 @@ export default function LandingPage() {
 
       <section className="mesh-bg relative overflow-hidden">
         <div className="grid-pattern absolute inset-0 opacity-70" />
-        <div className="relative mx-auto grid min-h-[720px] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1fr_0.9fr]">
-          <div>
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/75 px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm backdrop-blur">
+        <div className="relative mx-auto max-w-7xl px-6 py-16 lg:py-24">
+          {/* Top: headline centered or left */}
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/75 px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
               The SEMrush for the AI era
             </div>
-            <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.03] tracking-tight text-gray-950 sm:text-6xl lg:text-7xl">
-              Know where your brand ranks in <span className="text-gradient">AI search</span>
+            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-gray-950 sm:text-6xl lg:text-7xl">
+              Know where your brand<br className="hidden sm:block" /> ranks in <span className="text-gradient">AI search</span>
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-gray-600 sm:text-xl">
-              Track brand mentions, citations, sentiment, and share of voice across the AI engines your buyers now ask first.
+            <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-xl">
+              Track mentions, citations, and share of voice across ChatGPT, Gemini, and Claude.
             </p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Link
-                href="/login"
-                className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3.5 text-base font-semibold text-white shadow-xl shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-indigo-300"
-              >
-                Start for free →
-              </Link>
-              <Link
-                href="#demo"
-                className="rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-700 shadow-sm transition-all hover:border-indigo-200 hover:text-indigo-700"
-              >
-                See demo
-              </Link>
-            </div>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <div className="flex -space-x-3">
-                {["M", "A", "J", "S"].map((initial, idx) => (
-                  <div
-                    key={initial}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-gray-900 to-gray-500 text-sm font-bold text-white shadow-sm"
-                    style={{ transform: `translateY(${idx % 2 === 0 ? 0 : 2}px)` }}
-                  >
-                    {initial}
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm font-medium text-gray-500">500+ marketers tracking AI visibility</p>
-            </div>
           </div>
 
-          <div id="demo" className="w-full">
+          {/* Chat widget — full width, constrained */}
+          <div id="demo" className="mx-auto max-w-2xl">
             <TryWidget />
+          </div>
+
+          {/* Social proof */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex -space-x-3">
+              {["M", "A", "J", "S"].map((initial, idx) => (
+                <div
+                  key={initial}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-gray-900 to-gray-500 text-sm font-bold text-white shadow-sm"
+                  style={{ transform: `translateY(${idx % 2 === 0 ? 0 : 2}px)` }}
+                >
+                  {initial}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm font-medium text-gray-500">500+ marketers tracking AI visibility</p>
+            <Link
+              href="/login"
+              className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:border-indigo-200 hover:text-indigo-700"
+            >
+              Or sign up free →
+            </Link>
           </div>
         </div>
       </section>

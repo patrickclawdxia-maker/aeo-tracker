@@ -225,7 +225,7 @@ export function TryWidget() {
   const hasRunOnce = messages.some((m) => m.role === "user");
 
   return (
-    <div className="flex flex-col h-full max-h-[600px] rounded-3xl border border-gray-200 bg-white shadow-2xl shadow-indigo-100 overflow-hidden">
+    <div className="flex flex-col rounded-3xl border border-gray-200 bg-white shadow-2xl shadow-indigo-100 overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-3.5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-base font-bold text-white">
@@ -244,7 +244,7 @@ export function TryWidget() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
+      <div className="max-h-[420px] overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             {msg.role === "user" ? (

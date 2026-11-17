@@ -141,16 +141,63 @@ function ResultCard({ result, brand }: { result: TryResponse; brand: string }) {
   );
 }
 
-function TypingDots() {
+const SCAN_STEPS = [
+  { icon: "🔍", text: "Looking up your brand…" },
+  { icon: "🤖", text: "Querying ChatGPT…" },
+  { icon: "📊", text: "Analyzing mentions & sentiment…" },
+  { icon: "🔗", text: "Extracting citations…" },
+  { icon: "✨", text: "Building your visibility report…" },
+];
+
+function ScanningLoader() {
+  const [stepIndex, setStepIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStepIndex((prev) => Math.min(prev + 1, SCAN_STEPS.length - 1));
+    }, 1800);
+    return () => clearInterval(interval);
+  }, []);
+
+  const step = SCAN_STEPS[stepIndex];
+  const progress = Math.round(((stepIndex + 1) / SCAN_STEPS.length) * 100);
+
   return (
-    <div className="flex items-center gap-1 px-1 py-2">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="h-2 w-2 rounded-full bg-indigo-400 animate-bounce"
-          style={{ animationDelay: `${i * 0.15}s` }}
+    <div className="rounded-2xl rounded-tl-sm border border-indigo-100 bg-indigo-50 px-4 py-4 w-full">
+      {/* Step label */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-lg">{step.icon}</span>
+        <span className="text-sm font-medium text-indigo-700 transition-all">{step.text}</span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-indigo-200">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
+          style={{ width: `${progress}%` }}
         />
-      ))}
+      </div>
+
+      {/* Step dots */}
+      <div className="mt-3 flex items-center gap-1.5">
+        {SCAN_STEPS.map((s, i) => (
+          <div
+            key={i}
+            className={`h-1.5 rounded-full transition-all duration-500 ${
+              i < stepIndex
+                ? "w-4 bg-indigo-400"
+                : i === stepIndex
+                ? "w-4 bg-indigo-600 animate-pulse"
+                : "w-1.5 bg-indigo-200"
+            }`}
+          />
+        ))}
+        <span className="ml-auto text-[10px] font-semibold text-indigo-400">{progress}%</span>
+      </div>
+
+      <p className="mt-3 text-[11px] text-indigo-400">
+        Live scan across AI engines — usually takes 10–20 seconds
+      </p>
     </div>
   );
 }
@@ -254,9 +301,7 @@ export function TryWidget() {
             ) : (
               <div className="max-w-[90%] w-full">
                 {"loading" in msg && msg.loading ? (
-                  <div className="rounded-2xl rounded-tl-sm bg-gray-50 border border-gray-200 px-4 py-2">
-                    <TypingDots />
-                  </div>
+                  <ScanningLoader />
                 ) : "error" in msg && msg.error ? (
                   <div className="rounded-2xl rounded-tl-sm border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                     {msg.error}
@@ -310,9 +355,17 @@ export function TryWidget() {
           <button
             type="submit"
             disabled={loading || !input.trim() || triesLeft === 0}
-            className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50 hover:shadow-md transition-all"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm disabled:opacity-50 hover:shadow-md transition-all"
           >
-            {loading ? "…" : "Scan →"}
+            {loading ? (
+              <>
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                </svg>
+                Scanning
+              </>
+            ) : "Scan →"}
           </button>
         </form>
         {triesLeft === 0 && (

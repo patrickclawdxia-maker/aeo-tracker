@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 export async function POST(
@@ -9,16 +9,14 @@ export async function POST(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const { name } = await req.json();
   if (!name || !name.trim()) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
-  const result = db
-    .prepare("INSERT INTO tracked_brands (project_id, name) VALUES (?, ?)")
-    .run(params.id, name.trim());
-  const brand = db
-    .prepare("SELECT * FROM tracked_brands WHERE id = ?")
-    .get(result.lastInsertRowid);
-  return NextResponse.json(brand, { status: 201 });
+
+  const { rows } = await pool.query(
+    "INSERT INTO tracked_brands (project_id, name) VALUES ($1, $2) RETURNING *",
+    [params.id, name.trim()]
+  );
+  return NextResponse.json(rows[0], { status: 201 });
 }

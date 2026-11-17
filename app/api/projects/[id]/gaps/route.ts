@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { engines } from "@/lib/engines/registry";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 const POE_BASE_URL = "https://api.poe.com/v1";
-const POE_API_KEY = "***REDACTED***";
+const POE_API_KEY = process.env.POE_API_KEY ?? "";
 
 async function getLLMRecommendations(
   brandName: string,
@@ -55,22 +55,23 @@ export async function POST(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const projectId = parseInt(params.id);
 
-  const brands = db
-    .prepare("SELECT * FROM tracked_brands WHERE project_id = ?")
-    .all(projectId) as { id: number; name: string }[];
+  const { rows: brands } = await pool.query(
+    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; name: string }[] };
 
-  const queries = db
-    .prepare("SELECT * FROM tracked_queries WHERE project_id = ?")
-    .all(projectId) as { id: number; query: string }[];
+  const { rows: queries } = await pool.query(
+    "SELECT * FROM tracked_queries WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; query: string }[] };
 
-  const latestRun = db
-    .prepare(
-      "SELECT * FROM analysis_runs WHERE project_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1"
-    )
-    .get(projectId) as { id: number } | undefined;
+  const { rows: latestRunRows } = await pool.query(
+    "SELECT * FROM analysis_runs WHERE project_id = $1 AND status = 'completed' ORDER BY created_at DESC LIMIT 1",
+    [projectId]
+  );
+  const latestRun = latestRunRows[0] as { id: number } | undefined;
 
   if (!latestRun) {
     return NextResponse.json({ error: "No completed runs found" }, { status: 404 });
@@ -88,27 +89,25 @@ export async function POST(
   for (const brand of brands) {
     const gaps = [];
     for (const query of queries) {
-      const count = (db
-        .prepare(
-          `SELECT COUNT(*) as cnt
-           FROM brand_mentions bm
-           JOIN raw_responses rr ON bm.raw_response_id = rr.id
-           WHERE rr.run_id = ? AND bm.brand_id = ? AND rr.query_id = ?`
-        )
-        .get(latestRun.id, brand.id, query.id) as { cnt: number }).cnt;
+      const { rows: countRows } = await pool.query(
+        `SELECT COUNT(*) as cnt
+         FROM brand_mentions bm
+         JOIN raw_responses rr ON bm.raw_response_id = rr.id
+         WHERE rr.run_id = $1 AND bm.brand_id = $2 AND rr.query_id = $3`,
+        [latestRun.id, brand.id, query.id]
+      );
+      const count = parseInt(countRows[0].cnt);
 
       const perQuerySlots = 3 * engines.length;
       const mentionRate = perQuerySlots > 0 ? (count / perQuerySlots) * 100 : 0;
 
       if (mentionRate < 50) {
-        const existing = db
-          .prepare(
-            `SELECT * FROM content_gaps
-             WHERE project_id = ? AND run_id = ? AND brand_id = ? AND query_id = ?`
-          )
-          .get(projectId, latestRun.id, brand.id, query.id) as {
-          recommendations: string;
-        } | undefined;
+        const { rows: existingRows } = await pool.query(
+          `SELECT * FROM content_gaps
+           WHERE project_id = $1 AND run_id = $2 AND brand_id = $3 AND query_id = $4`,
+          [projectId, latestRun.id, brand.id, query.id]
+        );
+        const existing = existingRows[0] as { recommendations: string } | undefined;
 
         let recommendations: Array<{ title: string; content_type: string; rationale: string }>;
         if (existing) {
@@ -120,17 +119,18 @@ export async function POST(
             mentionRate
           );
 
-          db.prepare(
+          await pool.query(
             `INSERT INTO content_gaps
               (project_id, run_id, brand_id, query_id, mention_rate, recommendations)
-             VALUES (?, ?, ?, ?, ?, ?)`
-          ).run(
-            projectId,
-            latestRun.id,
-            brand.id,
-            query.id,
-            Math.round(mentionRate * 10) / 10,
-            JSON.stringify(recommendations)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [
+              projectId,
+              latestRun.id,
+              brand.id,
+              query.id,
+              Math.round(mentionRate * 10) / 10,
+              JSON.stringify(recommendations),
+            ]
           );
         }
 
@@ -157,37 +157,37 @@ export async function GET(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const projectId = parseInt(params.id);
 
-  const latestRun = db
-    .prepare(
-      "SELECT * FROM analysis_runs WHERE project_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1"
-    )
-    .get(projectId) as { id: number } | undefined;
+  const { rows: latestRunRows } = await pool.query(
+    "SELECT * FROM analysis_runs WHERE project_id = $1 AND status = 'completed' ORDER BY created_at DESC LIMIT 1",
+    [projectId]
+  );
+  const latestRun = latestRunRows[0] as { id: number } | undefined;
 
   if (!latestRun) {
     return NextResponse.json({ gaps: [] });
   }
 
-  const rows = db
-    .prepare(
-      `SELECT cg.*, tb.name as brand_name, tq.query as query_text
-       FROM content_gaps cg
-       JOIN tracked_brands tb ON cg.brand_id = tb.id
-       JOIN tracked_queries tq ON cg.query_id = tq.id
-       WHERE cg.project_id = ? AND cg.run_id = ?
-       ORDER BY cg.brand_id, cg.mention_rate ASC`
-    )
-    .all(projectId, latestRun.id) as Array<{
-    id: number;
-    brand_id: number;
-    brand_name: string;
-    query_id: number;
-    query_text: string;
-    mention_rate: number;
-    recommendations: string;
-  }>;
+  const { rows } = await pool.query(
+    `SELECT cg.*, tb.name as brand_name, tq.query as query_text
+     FROM content_gaps cg
+     JOIN tracked_brands tb ON cg.brand_id = tb.id
+     JOIN tracked_queries tq ON cg.query_id = tq.id
+     WHERE cg.project_id = $1 AND cg.run_id = $2
+     ORDER BY cg.brand_id, cg.mention_rate ASC`,
+    [projectId, latestRun.id]
+  ) as {
+    rows: Array<{
+      id: number;
+      brand_id: number;
+      brand_name: string;
+      query_id: number;
+      query_text: string;
+      mention_rate: number;
+      recommendations: string;
+    }>;
+  };
 
   const grouped: Record<
     number,

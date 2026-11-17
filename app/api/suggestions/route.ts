@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const POE_BASE_URL = "https://api.poe.com/v1";
-const POE_API_KEY = "***REDACTED***";
+const POE_API_KEY = process.env.POE_API_KEY ?? "";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();

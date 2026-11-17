@@ -2,7 +2,9 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getDb } from "@/lib/db";
+import { Pool } from "pg";
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 interface DbUser {
   id: number;
@@ -35,10 +37,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = credentials?.password as string;
         if (!email || !password) return null;
 
-        const db = getDb();
-        const user = db
-          .prepare("SELECT * FROM users WHERE email = ?")
-          .get(email) as DbUser | undefined;
+        const { rows } = await pool.query(
+          "SELECT * FROM users WHERE email = $1",
+          [email]
+        );
+        const user = rows[0] as DbUser | undefined;
 
         if (!user || !user.password_hash) return null;
 
@@ -57,26 +60,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account }) {
       // Handle Google OAuth — find or create user in DB
       if (account?.provider === "google") {
-        const db = getDb();
         const googleId = account.providerAccountId;
         const email = user.email!;
         const name = user.name ?? null;
 
-        let dbUser = db
-          .prepare("SELECT * FROM users WHERE email = ?")
-          .get(email) as DbUser | undefined;
+        const { rows } = await pool.query(
+          "SELECT * FROM users WHERE email = $1",
+          [email]
+        );
+        let dbUser = rows[0] as DbUser | undefined;
 
         if (!dbUser) {
-          db.prepare(
-            "INSERT INTO users (email, name, google_id) VALUES (?, ?, ?)"
-          ).run(email, name, googleId);
-          dbUser = db
-            .prepare("SELECT * FROM users WHERE email = ?")
-            .get(email) as DbUser;
+          await pool.query(
+            "INSERT INTO users (email, name, google_id) VALUES ($1, $2, $3)",
+            [email, name, googleId]
+          );
+          const { rows: newRows } = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [email]
+          );
+          dbUser = newRows[0] as DbUser;
         } else if (!dbUser.google_id) {
-          db.prepare("UPDATE users SET google_id = ? WHERE id = ?").run(
-            googleId,
-            dbUser.id
+          await pool.query(
+            "UPDATE users SET google_id = $1 WHERE id = $2",
+            [googleId, dbUser.id]
           );
         }
 

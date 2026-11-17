@@ -13,11 +13,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing referral code" }, { status: 400 });
   }
 
-  const result = applyReferralCode(effectiveUserId, code.trim().toUpperCase());
+  const result = await applyReferralCode(effectiveUserId, code.trim().toUpperCase());
 
   if (!result.success) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  return NextResponse.json({ success: true, message: "Referral applied! You got +50 bonus queries." });
+  return NextResponse.json({
+    success: true,
+    message: "Referral applied! You got +50 bonus queries.",
+  });
 }

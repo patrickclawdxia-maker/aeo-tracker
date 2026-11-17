@@ -6,8 +6,8 @@ export async function GET() {
   const { userId } = await getAuthSession();
   const effectiveUserId = userId ?? 0;
 
-  const quota = getQuotaStatus(effectiveUserId);
-  const referralCode = getReferralCode(effectiveUserId);
+  const quota = await getQuotaStatus(effectiveUserId);
+  const referralCode = await getReferralCode(effectiveUserId);
 
   return NextResponse.json({ ...quota, referralCode });
 }

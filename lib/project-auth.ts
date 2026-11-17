@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-helpers";
 
@@ -19,10 +19,11 @@ export async function verifyProjectOwnership(projectId: number | string): Promis
   const { userId, error: authError } = await getAuthSession();
   if (authError) return { project: null, userId: null, error: authError };
 
-  const db = getDb();
-  const project = db
-    .prepare("SELECT id, name, user_id FROM projects WHERE id = ?")
-    .get(projectId) as ProjectRow | undefined;
+  const { rows } = await pool.query(
+    "SELECT id, name, user_id FROM projects WHERE id = $1",
+    [projectId]
+  );
+  const project = rows[0] as ProjectRow | undefined;
 
   if (!project) {
     return {

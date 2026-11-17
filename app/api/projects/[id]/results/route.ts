@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { engines } from "@/lib/engines/registry";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
@@ -23,22 +23,25 @@ export async function GET(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const projectId = parseInt(params.id);
 
-  const brands = db
-    .prepare("SELECT * FROM tracked_brands WHERE project_id = ?")
-    .all(projectId) as { id: number; name: string }[];
+  const { rows: brands } = await pool.query(
+    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; name: string }[] };
 
-  const queries = db
-    .prepare("SELECT * FROM tracked_queries WHERE project_id = ?")
-    .all(projectId) as { id: number; query: string }[];
+  const { rows: queries } = await pool.query(
+    "SELECT * FROM tracked_queries WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; query: string }[] };
 
-  const latestRun = db
-    .prepare(
-      "SELECT * FROM analysis_runs WHERE project_id = ? ORDER BY created_at DESC LIMIT 1"
-    )
-    .get(projectId) as { id: number; created_at: string; status: string } | undefined;
+  const { rows: latestRunRows } = await pool.query(
+    "SELECT * FROM analysis_runs WHERE project_id = $1 ORDER BY created_at DESC LIMIT 1",
+    [projectId]
+  );
+  const latestRun = latestRunRows[0] as
+    | { id: number; created_at: string; status: string }
+    | undefined;
 
   if (!latestRun) {
     return NextResponse.json({ results: [], latestRun: null, queries });
@@ -52,19 +55,15 @@ export async function GET(
     const byEngine: Record<string, BrandEngineStats> = {};
 
     for (const engine of engines) {
-      const mentions = db
-        .prepare(
-          `SELECT bm.position, bm.sentiment
-           FROM brand_mentions bm
-           JOIN raw_responses rr ON bm.raw_response_id = rr.id
-           WHERE rr.run_id = ?
-             AND bm.brand_id = ?
-             AND rr.engine_id = ?`
-        )
-        .all(latestRun.id, brand.id, engine.id) as {
-        position: number;
-        sentiment: string;
-      }[];
+      const { rows: mentions } = await pool.query(
+        `SELECT bm.position, bm.sentiment
+         FROM brand_mentions bm
+         JOIN raw_responses rr ON bm.raw_response_id = rr.id
+         WHERE rr.run_id = $1
+           AND bm.brand_id = $2
+           AND rr.engine_id = $3`,
+        [latestRun.id, brand.id, engine.id]
+      ) as { rows: { position: number; sentiment: string }[] };
 
       const totalMentions = mentions.length;
       const mentionRate =
@@ -87,15 +86,14 @@ export async function GET(
       };
     }
 
-    const allMentions = db
-      .prepare(
-        `SELECT bm.position, bm.sentiment
-         FROM brand_mentions bm
-         JOIN raw_responses rr ON bm.raw_response_id = rr.id
-         WHERE rr.run_id = ?
-           AND bm.brand_id = ?`
-      )
-      .all(latestRun.id, brand.id) as { position: number; sentiment: string }[];
+    const { rows: allMentions } = await pool.query(
+      `SELECT bm.position, bm.sentiment
+       FROM brand_mentions bm
+       JOIN raw_responses rr ON bm.raw_response_id = rr.id
+       WHERE rr.run_id = $1
+         AND bm.brand_id = $2`,
+      [latestRun.id, brand.id]
+    ) as { rows: { position: number; sentiment: string }[] };
 
     const totalEngineSlots = totalSlots * engines.length;
     const overallRate =
@@ -123,48 +121,53 @@ export async function GET(
     });
   }
 
-  const queryBreakdown = queries.map((q) => {
-    const queryBrands = brands.map((brand) => {
-      const mentions = db
-        .prepare(
-          `SELECT bm.position, bm.sentiment, bm.context_snippet, rr.engine_id
-           FROM brand_mentions bm
-           JOIN raw_responses rr ON bm.raw_response_id = rr.id
-           WHERE rr.run_id = ?
-             AND bm.brand_id = ?
-             AND rr.query_id = ?`
-        )
-        .all(latestRun.id, brand.id, q.id) as {
-        position: number;
-        sentiment: string;
-        context_snippet: string;
-        engine_id: string;
-      }[];
+  const queryBreakdown = await Promise.all(
+    queries.map(async (q) => {
+      const queryBrands = await Promise.all(
+        brands.map(async (brand) => {
+          const { rows: mentions } = await pool.query(
+            `SELECT bm.position, bm.sentiment, bm.context_snippet, rr.engine_id
+             FROM brand_mentions bm
+             JOIN raw_responses rr ON bm.raw_response_id = rr.id
+             WHERE rr.run_id = $1
+               AND bm.brand_id = $2
+               AND rr.query_id = $3`,
+            [latestRun.id, brand.id, q.id]
+          ) as {
+            rows: {
+              position: number;
+              sentiment: string;
+              context_snippet: string;
+              engine_id: string;
+            }[];
+          };
+
+          return {
+            brand,
+            mention_count: mentions.length,
+            avg_position:
+              mentions.length > 0
+                ? Math.round(
+                    (mentions.reduce((s, m) => s + m.position, 0) /
+                      mentions.length) *
+                      10
+                  ) / 10
+                : 0,
+            snippets: mentions.slice(0, 3).map((m) => ({
+              engine_id: m.engine_id,
+              sentiment: m.sentiment,
+              context_snippet: m.context_snippet,
+            })),
+          };
+        })
+      );
 
       return {
-        brand,
-        mention_count: mentions.length,
-        avg_position:
-          mentions.length > 0
-            ? Math.round(
-                (mentions.reduce((s, m) => s + m.position, 0) /
-                  mentions.length) *
-                  10
-              ) / 10
-            : 0,
-        snippets: mentions.slice(0, 3).map((m) => ({
-          engine_id: m.engine_id,
-          sentiment: m.sentiment,
-          context_snippet: m.context_snippet,
-        })),
+        query: q,
+        brands: queryBrands,
       };
-    });
-
-    return {
-      query: q,
-      brands: queryBrands,
-    };
-  });
+    })
+  );
 
   return NextResponse.json({
     results: brandResults,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 export async function POST(
@@ -9,16 +9,14 @@ export async function POST(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const { query } = await req.json();
   if (!query || !query.trim()) {
     return NextResponse.json({ error: "Query is required" }, { status: 400 });
   }
-  const result = db
-    .prepare("INSERT INTO tracked_queries (project_id, query) VALUES (?, ?)")
-    .run(params.id, query.trim());
-  const q = db
-    .prepare("SELECT * FROM tracked_queries WHERE id = ?")
-    .get(result.lastInsertRowid);
-  return NextResponse.json(q, { status: 201 });
+
+  const { rows } = await pool.query(
+    "INSERT INTO tracked_queries (project_id, query) VALUES ($1, $2) RETURNING *",
+    [params.id, query.trim()]
+  );
+  return NextResponse.json(rows[0], { status: 201 });
 }

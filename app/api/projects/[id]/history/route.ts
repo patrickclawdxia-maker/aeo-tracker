@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 export async function GET(
@@ -9,35 +9,36 @@ export async function GET(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
   const projectId = parseInt(params.id);
 
-  const brands = db
-    .prepare("SELECT * FROM tracked_brands WHERE project_id = ?")
-    .all(projectId) as { id: number; name: string }[];
+  const { rows: brands } = await pool.query(
+    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; name: string }[] };
 
-  const rows = db
-    .prepare(
-      `SELECT rs.*, tb.name as brand_name
-       FROM run_summaries rs
-       JOIN tracked_brands tb ON rs.brand_id = tb.id
-       WHERE rs.project_id = ?
-       ORDER BY rs.created_at ASC`
-    )
-    .all(projectId) as Array<{
-    id: number;
-    run_id: number;
-    project_id: number;
-    created_at: string;
-    brand_id: number;
-    brand_name: string;
-    engine_id: string;
-    mention_rate: number;
-    avg_position: number | null;
-    sentiment_positive: number;
-    sentiment_neutral: number;
-    sentiment_negative: number;
-  }>;
+  const { rows } = await pool.query(
+    `SELECT rs.*, tb.name as brand_name
+     FROM run_summaries rs
+     JOIN tracked_brands tb ON rs.brand_id = tb.id
+     WHERE rs.project_id = $1
+     ORDER BY rs.created_at ASC`,
+    [projectId]
+  ) as {
+    rows: Array<{
+      id: number;
+      run_id: number;
+      project_id: number;
+      created_at: string;
+      brand_id: number;
+      brand_name: string;
+      engine_id: string;
+      mention_rate: number;
+      avg_position: number | null;
+      sentiment_positive: number;
+      sentiment_neutral: number;
+      sentiment_negative: number;
+    }>;
+  };
 
   const grouped: Record<
     string,
@@ -96,7 +97,8 @@ export async function GET(
       const posRows = brandRows.filter((r) => r.avg_position !== null);
       const avgPos =
         posRows.length > 0
-          ? posRows.reduce((s, r) => s + (r.avg_position ?? 0), 0) / posRows.length
+          ? posRows.reduce((s, r) => s + (r.avg_position ?? 0), 0) /
+            posRows.length
           : null;
 
       grouped[brand.id].overall.push({

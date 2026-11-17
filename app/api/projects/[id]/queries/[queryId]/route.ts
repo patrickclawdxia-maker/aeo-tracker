@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 export async function DELETE(
@@ -9,9 +9,9 @@ export async function DELETE(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
-  db.prepare(
-    "DELETE FROM tracked_queries WHERE id = ? AND project_id = ?"
-  ).run(params.queryId, params.id);
+  await pool.query(
+    "DELETE FROM tracked_queries WHERE id = $1 AND project_id = $2",
+    [params.queryId, params.id]
+  );
   return NextResponse.json({ success: true });
 }

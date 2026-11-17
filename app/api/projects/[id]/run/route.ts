@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { engines } from "@/lib/engines/registry";
 import { queryEngine, sleep } from "@/lib/poe";
 import { parseResponse } from "@/lib/parser";
@@ -39,23 +39,28 @@ export async function POST(
   const { error: authError, userId } = await verifyProjectOwnership(params.id);
   if (authError) return authError;
 
-  const db = getDb();
   const projectId = parseInt(params.id);
 
-  const project = db
-    .prepare("SELECT * FROM projects WHERE id = ?")
-    .get(projectId) as { id: number; name: string; schedule: string | null } | undefined;
+  const { rows: projectRows } = await pool.query(
+    "SELECT * FROM projects WHERE id = $1",
+    [projectId]
+  );
+  const project = projectRows[0] as
+    | { id: number; name: string; schedule: string | null }
+    | undefined;
   if (!project) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
-  const brands = db
-    .prepare("SELECT * FROM tracked_brands WHERE project_id = ?")
-    .all(projectId) as { id: number; name: string }[];
+  const { rows: brands } = await pool.query(
+    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; name: string }[] };
 
-  const queries = db
-    .prepare("SELECT * FROM tracked_queries WHERE project_id = ?")
-    .all(projectId) as { id: number; query: string }[];
+  const { rows: queries } = await pool.query(
+    "SELECT * FROM tracked_queries WHERE project_id = $1",
+    [projectId]
+  ) as { rows: { id: number; query: string }[] };
 
   if (brands.length === 0) {
     return NextResponse.json({ error: "No brands to track" }, { status: 400 });
@@ -68,7 +73,7 @@ export async function POST(
   // Quota check: total LLM calls = queries × engines × iterations
   const totalCalls = queries.length * engines.length * ITERATIONS;
   const effectiveUserId = userId ?? 0;
-  const quota = getQuotaStatus(effectiveUserId);
+  const quota = await getQuotaStatus(effectiveUserId);
   if (quota.remaining < totalCalls) {
     return NextResponse.json(
       {
@@ -79,10 +84,11 @@ export async function POST(
     );
   }
 
-  const runResult = db
-    .prepare("INSERT INTO analysis_runs (project_id, status) VALUES (?, 'running')")
-    .run(projectId);
-  const runId = runResult.lastInsertRowid as number;
+  const { rows: runRows } = await pool.query(
+    "INSERT INTO analysis_runs (project_id, status) VALUES ($1, 'running') RETURNING id",
+    [projectId]
+  );
+  const runId = runRows[0].id as number;
 
   const progress: string[] = [];
   const errors: string[] = [];
@@ -95,29 +101,28 @@ export async function POST(
           try {
             progress.push(`Starting ${label}`);
             // Consume 1 quota unit per LLM call
-            consumeQuota(effectiveUserId, 1);
+            await consumeQuota(effectiveUserId, 1);
             const responseText = await queryEngine(engine.model, q.query);
 
-            const rawResult = db
-              .prepare(
-                `INSERT INTO raw_responses (run_id, query_id, engine_id, iteration, response_text)
-                 VALUES (?, ?, ?, ?, ?)`
-              )
-              .run(runId, q.id, engine.id, iter, responseText);
-
-            const rawResponseId = rawResult.lastInsertRowid as number;
+            const { rows: rawRows } = await pool.query(
+              `INSERT INTO raw_responses (run_id, query_id, engine_id, iteration, response_text)
+               VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+              [runId, q.id, engine.id, iter, responseText]
+            );
+            const rawResponseId = rawRows[0].id as number;
 
             const mentions = parseResponse(responseText, brands);
             for (const mention of mentions) {
-              db.prepare(
+              await pool.query(
                 `INSERT INTO brand_mentions (raw_response_id, brand_id, position, sentiment, context_snippet)
-                 VALUES (?, ?, ?, ?, ?)`
-              ).run(
-                rawResponseId,
-                mention.brandId,
-                mention.position,
-                mention.sentiment,
-                mention.contextSnippet
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [
+                  rawResponseId,
+                  mention.brandId,
+                  mention.position,
+                  mention.sentiment,
+                  mention.contextSnippet,
+                ]
               );
             }
 
@@ -125,15 +130,18 @@ export async function POST(
             for (const url of urls) {
               const domain = extractDomain(url);
               try {
-                db.prepare(
-                  `INSERT INTO citations (raw_response_id, url, domain) VALUES (?, ?, ?)`
-                ).run(rawResponseId, url, domain);
+                await pool.query(
+                  `INSERT INTO citations (raw_response_id, url, domain) VALUES ($1, $2, $3)`,
+                  [rawResponseId, url, domain]
+                );
               } catch {
                 // ignore duplicate or other errors
               }
             }
 
-            progress.push(`Done ${label} — ${mentions.length} mentions, ${urls.length} URLs found`);
+            progress.push(
+              `Done ${label} — ${mentions.length} mentions, ${urls.length} URLs found`
+            );
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : String(err);
             errors.push(`Error ${label}: ${msg}`);
@@ -145,26 +153,31 @@ export async function POST(
       }
     }
 
-    db.prepare("UPDATE analysis_runs SET status = 'completed' WHERE id = ?").run(runId);
+    await pool.query(
+      "UPDATE analysis_runs SET status = 'completed' WHERE id = $1",
+      [runId]
+    );
 
-    const runCreatedAt = (db
-      .prepare("SELECT created_at FROM analysis_runs WHERE id = ?")
-      .get(runId) as { created_at: string }).created_at;
+    const { rows: runMeta } = await pool.query(
+      "SELECT created_at FROM analysis_runs WHERE id = $1",
+      [runId]
+    );
+    const runCreatedAt = (runMeta[0] as { created_at: string }).created_at;
 
     const totalSlots = queries.length * ITERATIONS;
 
     for (const brand of brands) {
       for (const engine of engines) {
-        const mentions = db
-          .prepare(
-            `SELECT bm.position, bm.sentiment
-             FROM brand_mentions bm
-             JOIN raw_responses rr ON bm.raw_response_id = rr.id
-             WHERE rr.run_id = ? AND bm.brand_id = ? AND rr.engine_id = ?`
-          )
-          .all(runId, brand.id, engine.id) as { position: number; sentiment: string }[];
+        const { rows: mentions } = await pool.query(
+          `SELECT bm.position, bm.sentiment
+           FROM brand_mentions bm
+           JOIN raw_responses rr ON bm.raw_response_id = rr.id
+           WHERE rr.run_id = $1 AND bm.brand_id = $2 AND rr.engine_id = $3`,
+          [runId, brand.id, engine.id]
+        ) as { rows: { position: number; sentiment: string }[] };
 
-        const mentionRate = totalSlots > 0 ? (mentions.length / totalSlots) * 100 : 0;
+        const mentionRate =
+          totalSlots > 0 ? (mentions.length / totalSlots) * 100 : 0;
         const avgPosition =
           mentions.length > 0
             ? mentions.reduce((s, m) => s + m.position, 0) / mentions.length
@@ -174,33 +187,44 @@ export async function POST(
         const sentNeu = mentions.filter((m) => m.sentiment === "neutral").length;
         const sentNeg = mentions.filter((m) => m.sentiment === "negative").length;
 
-        db.prepare(
-          `DELETE FROM run_summaries WHERE run_id = ? AND brand_id = ? AND engine_id = ?`
-        ).run(runId, brand.id, engine.id);
+        await pool.query(
+          `DELETE FROM run_summaries WHERE run_id = $1 AND brand_id = $2 AND engine_id = $3`,
+          [runId, brand.id, engine.id]
+        );
 
-        db.prepare(
+        await pool.query(
           `INSERT INTO run_summaries
             (run_id, project_id, created_at, brand_id, engine_id, mention_rate, avg_position,
              sentiment_positive, sentiment_neutral, sentiment_negative)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        ).run(
-          runId, projectId, runCreatedAt, brand.id, engine.id,
-          Math.round(mentionRate * 10) / 10,
-          avgPosition !== null ? Math.round(avgPosition * 10) / 10 : null,
-          sentPos, sentNeu, sentNeg
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [
+            runId,
+            projectId,
+            runCreatedAt,
+            brand.id,
+            engine.id,
+            Math.round(mentionRate * 10) / 10,
+            avgPosition !== null ? Math.round(avgPosition * 10) / 10 : null,
+            sentPos,
+            sentNeu,
+            sentNeg,
+          ]
         );
       }
     }
 
     const now = new Date();
     const nextRunAt = computeNextRunAt(project.schedule, now);
-    db.prepare(
-      `UPDATE projects SET last_run_at = ?, next_run_at = ? WHERE id = ?`
-    ).run(now.toISOString(), nextRunAt, projectId);
-
+    await pool.query(
+      `UPDATE projects SET last_run_at = $1, next_run_at = $2 WHERE id = $3`,
+      [now.toISOString(), nextRunAt, projectId]
+    );
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    db.prepare("UPDATE analysis_runs SET status = 'failed' WHERE id = ?").run(runId);
+    await pool.query(
+      "UPDATE analysis_runs SET status = 'failed' WHERE id = $1",
+      [runId]
+    );
     return NextResponse.json(
       { error: msg, runId, progress, errors },
       { status: 500 }

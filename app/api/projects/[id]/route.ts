@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { pool } from "@/lib/pool";
 import { verifyProjectOwnership } from "@/lib/project-auth";
 
 export async function GET(
@@ -9,26 +9,28 @@ export async function GET(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
-  const project = db
-    .prepare("SELECT * FROM projects WHERE id = ?")
-    .get(params.id);
-  if (!project) {
+  const { rows: projectRows } = await pool.query(
+    "SELECT * FROM projects WHERE id = $1",
+    [params.id]
+  );
+  if (!projectRows[0]) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  const brands = db
-    .prepare("SELECT * FROM tracked_brands WHERE project_id = ?")
-    .all(params.id);
-  const queries = db
-    .prepare("SELECT * FROM tracked_queries WHERE project_id = ?")
-    .all(params.id);
-  const runs = db
-    .prepare(
-      "SELECT * FROM analysis_runs WHERE project_id = ? ORDER BY created_at DESC"
-    )
-    .all(params.id);
 
-  return NextResponse.json({ project, brands, queries, runs });
+  const { rows: brands } = await pool.query(
+    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    [params.id]
+  );
+  const { rows: queries } = await pool.query(
+    "SELECT * FROM tracked_queries WHERE project_id = $1",
+    [params.id]
+  );
+  const { rows: runs } = await pool.query(
+    "SELECT * FROM analysis_runs WHERE project_id = $1 ORDER BY created_at DESC",
+    [params.id]
+  );
+
+  return NextResponse.json({ project: projectRows[0], brands, queries, runs });
 }
 
 export async function DELETE(
@@ -38,7 +40,6 @@ export async function DELETE(
   const { error } = await verifyProjectOwnership(params.id);
   if (error) return error;
 
-  const db = getDb();
-  db.prepare("DELETE FROM projects WHERE id = ?").run(params.id);
+  await pool.query("DELETE FROM projects WHERE id = $1", [params.id]);
   return NextResponse.json({ success: true });
 }

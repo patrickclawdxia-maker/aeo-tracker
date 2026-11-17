@@ -1,4 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
+
+const APP_URL = process.env.NEXTAUTH_URL || "https://aeo-tracker.vercel.app";
+
+export const metadata: Metadata = {
+  title: "AEO Tracker — The SEMrush for the AI Era",
+  description:
+    "Know where your brand ranks in ChatGPT, Gemini, and Claude. Track AI mentions, citations, competitor share of voice, and content gaps — all in one dashboard.",
+  alternates: {
+    canonical: APP_URL,
+  },
+  openGraph: {
+    url: APP_URL,
+    title: "AEO Tracker — The SEMrush for the AI Era",
+    description:
+      "Know where your brand ranks in ChatGPT, Gemini, and Claude. Track AI mentions, citations, competitor share of voice, and content gaps.",
+  },
+};
 
 const features = [
   {
@@ -51,9 +70,40 @@ const accentClasses: Record<string, string> = {
   blue: "bg-blue-50 text-blue-600 group-hover:border-blue-300 group-hover:shadow-blue-100",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "AEO Tracker",
+  url: APP_URL,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description:
+    "Track your brand's visibility across ChatGPT, Gemini, and Claude. Monitor AI mentions, citations, share of voice, and competitor benchmarks.",
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro",
+      price: "49",
+      priceCurrency: "USD",
+      billingIncrement: "P1M",
+    },
+  ],
+};
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
+      <Script
+        id="json-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-3">

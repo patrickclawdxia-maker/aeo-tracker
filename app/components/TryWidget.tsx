@@ -82,60 +82,59 @@ function ResultCard({ result, brand }: { result: TryResponse; brand: string }) {
       {/* Query results */}
       <div className="space-y-2 px-4 pb-3">
         {result.results.map((r, i) => (
-          <div key={i} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
-            <div className="mb-1 flex items-center gap-1.5 text-[11px] text-gray-400">
-              <span className="font-medium text-gray-600 truncate">{r.query}</span>
-            </div>
+          <div key={i} className="rounded-xl border border-gray-100 bg-gray-50 p-3.5">
+            {/* Query text */}
+            <p className="mb-2 text-xs font-medium text-gray-500 leading-relaxed line-clamp-2">
+              {r.query}
+            </p>
             {r.mentioned ? (
               <>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-emerald-500">✓</span>
-                  <span className="text-xs font-medium text-gray-700">Mentioned</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                    <span>✓</span> Mentioned
+                  </span>
                   {r.sentiment && (
-                    <span className={`text-[10px] font-semibold ${sentimentLabel[r.sentiment].color}`}>
-                      · {sentimentLabel[r.sentiment].label}
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold border ${sentimentLabel[r.sentiment].bg} ${sentimentLabel[r.sentiment].color}`}>
+                      {sentimentLabel[r.sentiment].label}
                     </span>
                   )}
                 </div>
                 {r.snippet && (
-                  <p className="mt-1.5 text-[11px] leading-5 text-gray-500 italic">
+                  <p className="mt-2 text-xs leading-5 text-gray-500 italic border-l-2 border-indigo-200 pl-2.5">
                     &ldquo;{r.snippet}&rdquo;
                   </p>
                 )}
               </>
             ) : (
-              <div className="flex items-center gap-1.5">
-                <span className="text-gray-400">—</span>
-                <span className="text-xs text-gray-400">Not mentioned</span>
-              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-500">
+                — Not mentioned
+              </span>
             )}
           </div>
         ))}
       </div>
 
       {/* Teaser lock */}
-      <div className="border-t border-dashed border-indigo-200 bg-indigo-50 px-4 py-3">
-        <div className="mb-2 flex items-center gap-2 text-xs text-indigo-600">
-          <span>🔒</span>
-          <span className="font-medium">{result.teaserNote}</span>
+      <div className="border-t border-dashed border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 px-4 py-4">
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-sm">🔒</span>
+          <span className="text-xs font-semibold text-indigo-700">{result.teaserNote}</span>
         </div>
-        <div className="mb-3 grid grid-cols-3 gap-2 text-center">
-          {[
-            { label: "Gemini", locked: true },
-            { label: "Claude", locked: true },
-            { label: "+8 queries", locked: true },
-          ].map(({ label }) => (
-            <div key={label} className="rounded-lg border border-indigo-200 bg-white/70 py-2 text-[11px] font-medium text-indigo-400">
-              {label} 🔒
+        <div className="mb-4 grid grid-cols-3 gap-2 text-center">
+          {["Gemini", "Claude", "+8 queries"].map((label) => (
+            <div key={label} className="rounded-xl border border-indigo-200 bg-white/80 py-2.5 shadow-sm">
+              <div className="text-xs font-semibold text-indigo-400">{label}</div>
+              <div className="mt-0.5 text-[10px] text-indigo-300">🔒 locked</div>
             </div>
           ))}
         </div>
         <Link
           href="/login"
-          className="block w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-2.5 text-center text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
+          className="block w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3 text-center text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-indigo-300"
         >
           Unlock full report — it&apos;s free →
         </Link>
+        <p className="mt-2 text-center text-[11px] text-indigo-400">No credit card · takes 30 seconds</p>
       </div>
     </div>
   );
@@ -291,7 +290,7 @@ export function TryWidget() {
       </div>
 
       {/* Messages */}
-      <div className="max-h-[420px] overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
+      <div className="max-h-[500px] overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             {msg.role === "user" ? (

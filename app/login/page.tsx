@@ -67,27 +67,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-2xl font-bold text-white mb-2">
+          <div className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900 mb-2">
             <span className="text-3xl">🤖</span>
-            <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
               AEO Tracker
             </span>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-500 text-sm">
             {mode === "login" ? "Welcome back" : "Create your account"}
           </p>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg">
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
             disabled={googleLoading || loading}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-medium px-4 py-3 rounded-xl transition-colors disabled:opacity-50 mb-6"
+            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-medium px-4 py-3 rounded-xl transition-colors disabled:opacity-50 mb-6 border border-gray-300"
           >
             {googleLoading ? (
               <span className="animate-spin text-lg">⟳</span>
@@ -105,16 +105,16 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700" />
+              <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-gray-900 text-gray-500">or continue with email</span>
+              <span className="px-3 bg-white text-gray-400">or continue with email</span>
             </div>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-4 p-3 bg-red-950 border border-red-800 rounded-lg text-red-300 text-sm">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -123,7 +123,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
                   Full Name
                 </label>
                 <input
@@ -131,13 +131,13 @@ export default function LoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
                 Email
               </label>
               <input
@@ -146,12 +146,12 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
+              <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
                 Password
               </label>
               <input
@@ -161,14 +161,14 @@ export default function LoginPage() {
                 placeholder={mode === "register" ? "Min. 8 characters" : "••••••••"}
                 required
                 minLength={mode === "register" ? 8 : 1}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium px-4 py-3 rounded-xl transition-colors mt-2"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-medium px-4 py-3 rounded-xl transition-colors mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -190,7 +190,7 @@ export default function LoginPage() {
                 Don&apos;t have an account?{" "}
                 <button
                   onClick={() => { setMode("register"); setError(""); }}
-                  className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                 >
                   Sign up free
                 </button>
@@ -200,7 +200,7 @@ export default function LoginPage() {
                 Already have an account?{" "}
                 <button
                   onClick={() => { setMode("login"); setError(""); }}
-                  className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                 >
                   Sign in
                 </button>
@@ -209,7 +209,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <p className="text-center text-xs text-gray-600 mt-6">
+        <p className="text-center text-xs text-gray-400 mt-6">
           By signing up you agree to our Terms of Service and Privacy Policy.
         </p>
       </div>

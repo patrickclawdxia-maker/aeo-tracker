@@ -143,15 +143,15 @@ export default function ProjectPage({
 
   if (loading) {
     return (
-      <div className="text-center py-16 text-gray-500">Loading project…</div>
+      <div className="text-center py-16 text-gray-400">Loading project…</div>
     );
   }
 
   if (!project) {
     return (
       <div className="text-center py-16">
-        <p className="text-gray-400">Project not found.</p>
-        <Link href="/" className="text-indigo-400 hover:underline mt-4 block">
+        <p className="text-gray-500">Project not found.</p>
+        <Link href="/" className="text-indigo-600 hover:underline mt-4 block">
           ← Back to dashboard
         </Link>
       </div>
@@ -165,19 +165,19 @@ export default function ProjectPage({
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-          <Link href="/" className="hover:text-gray-300 transition-colors">
+          <Link href="/" className="hover:text-gray-700 transition-colors">
             Projects
           </Link>
           <span>/</span>
-          <span className="text-gray-300">{project.project.name}</span>
+          <span className="text-gray-900">{project.project.name}</span>
         </div>
 
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-gray-900">
               {project.project.name}
             </h1>
-            <div className="flex gap-4 mt-2 text-sm text-gray-400">
+            <div className="flex gap-4 mt-2 text-sm text-gray-500">
               <span>
                 {project.brands.length} brand
                 {project.brands.length !== 1 ? "s" : ""}
@@ -211,7 +211,7 @@ export default function ProjectPage({
               project.brands.length === 0 ||
               project.queries.length === 0
             }
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 flex-shrink-0"
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 flex-shrink-0 text-sm"
           >
             {running ? (
               <>
@@ -227,18 +227,18 @@ export default function ProjectPage({
 
       {/* Run Progress */}
       {(running || runProgress.length > 0) && (
-        <div className="mb-6 bg-gray-900 border border-gray-700 rounded-xl p-4">
-          <h4 className="text-sm font-medium text-gray-300 mb-3">
+        <div className="mb-6 bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+          <h4 className="text-sm font-medium text-indigo-800 mb-3">
             {running ? "Analysis in progress…" : "Analysis complete"}
           </h4>
           <div className="space-y-1 max-h-48 overflow-y-auto">
             {runProgress.map((line, i) => (
-              <div key={i} className="text-xs font-mono text-gray-400">
+              <div key={i} className="text-xs font-mono text-indigo-700">
                 {line}
               </div>
             ))}
             {running && (
-              <div className="text-xs font-mono text-indigo-400 animate-pulse">
+              <div className="text-xs font-mono text-indigo-500 animate-pulse">
                 ▸ Processing…
               </div>
             )}
@@ -247,14 +247,14 @@ export default function ProjectPage({
       )}
 
       {runError && (
-        <div className="mb-6 bg-red-950 border border-red-800 rounded-xl p-4 text-red-300 text-sm">
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
           {runError}
         </div>
       )}
 
       {/* Warning if no brands/queries */}
       {(project.brands.length === 0 || project.queries.length === 0) && (
-        <div className="mb-6 bg-yellow-950/50 border border-yellow-800 rounded-xl p-4 text-yellow-300 text-sm">
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-700 text-sm">
           {project.brands.length === 0 && (
             <p>⚠ Add at least one brand in Settings before running analysis.</p>
           )}
@@ -265,15 +265,15 @@ export default function ProjectPage({
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-gray-800 mb-6 overflow-x-auto">
+      <div className="flex gap-0 border-b border-gray-200 mb-6 overflow-x-auto bg-white">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => { setTab(t.id); trackEvent("tab_viewed", "navigation", { tab: t.id, projectId: params.id }); }}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
               tab === t.id
-                ? "border-indigo-500 text-indigo-400"
-                : "border-transparent text-gray-400 hover:text-gray-200"
+                ? "border-indigo-600 text-indigo-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
             {t.label}

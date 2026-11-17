@@ -20,20 +20,20 @@ interface CrawlerCheck {
 function StatusBadge({ status }: { status: CrawlerResult["status"] }) {
   if (status === "allowed") {
     return (
-      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-900/50 text-green-300 border border-green-800">
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
         🟢 Allowed
       </span>
     );
   }
   if (status === "blocked") {
     return (
-      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-800">
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
         🔴 Blocked
       </span>
     );
   }
   return (
-    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-800 text-gray-400">
+    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
       ⚪ Not Mentioned
     </span>
   );
@@ -99,7 +99,7 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
 
   if (loading) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         <span className="animate-spin inline-block mr-2">⟳</span>Loading…
       </div>
     );
@@ -109,15 +109,15 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-white">AI Crawler Visibility</h3>
+        <h3 className="text-lg font-semibold text-gray-900">AI Crawler Visibility</h3>
         <p className="text-sm text-gray-500 mt-1">
           Check which AI crawlers can access your site based on your robots.txt
         </p>
       </div>
 
       {/* Domain input */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-        <label className="block text-sm text-gray-400 mb-2">Your Domain</label>
+      <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+        <label className="block text-sm text-gray-500 mb-2">Your Domain</label>
         <div className="flex gap-3">
           <input
             type="text"
@@ -125,12 +125,12 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
             onChange={(e) => setDomain(e.target.value)}
             placeholder="example.com"
             onKeyDown={(e) => e.key === "Enter" && runCheck()}
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500"
+            className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
           <button
             onClick={runCheck}
             disabled={checking}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-2"
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-2"
           >
             {checking ? (
               <>
@@ -144,11 +144,11 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
         </div>
 
         {error && (
-          <p className="text-red-400 text-sm mt-2">{error}</p>
+          <p className="text-red-600 text-sm mt-2">{error}</p>
         )}
 
         {check && (
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-400 mt-2">
             Last checked: {new Date(check.checked_at).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
@@ -166,7 +166,7 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
           {blockedCrawlers.map((c) => (
             <div
               key={c.id}
-              className="bg-red-950/40 border border-red-800 rounded-xl p-4 text-sm text-red-300"
+              className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700"
             >
               ⚠️ <strong>{c.name}</strong> is blocked in your robots.txt. This may reduce your AI search visibility.
             </div>
@@ -181,16 +181,16 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
             {check.crawlers.map((crawler) => (
               <div
                 key={crawler.id}
-                className={`bg-gray-900 border rounded-xl p-4 space-y-3 ${
-                  crawler.status === "blocked" ? "border-red-900" : "border-gray-800"
+                className={`bg-white border rounded-xl p-4 space-y-3 shadow-sm ${
+                  crawler.status === "blocked" ? "border-red-200" : "border-gray-200"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🤖</span>
                     <div>
-                      <p className="text-white text-sm font-medium leading-tight">{crawler.name}</p>
-                      <p className="text-gray-500 text-xs font-mono mt-0.5">{crawler.userAgent}</p>
+                      <p className="text-gray-900 text-sm font-medium leading-tight">{crawler.name}</p>
+                      <p className="text-gray-400 text-xs font-mono mt-0.5">{crawler.userAgent}</p>
                     </div>
                   </div>
                 </div>
@@ -202,7 +202,7 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
                     href={crawler.docsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-indigo-400 hover:text-indigo-300 text-xs underline"
+                    className="text-indigo-600 hover:text-indigo-700 text-xs underline"
                   >
                     View docs →
                   </a>
@@ -212,22 +212,22 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
           </div>
 
           {/* Robots.txt viewer */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
             <button
               onClick={() => setShowRobots((v) => !v)}
-              className="w-full flex items-center justify-between px-5 py-3 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+              className="w-full flex items-center justify-between px-5 py-3 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
             >
               <span>robots.txt contents</span>
               <span>{showRobots ? "▲" : "▼"}</span>
             </button>
             {showRobots && (
-              <div className="px-5 pb-5 border-t border-gray-800">
+              <div className="px-5 pb-5 border-t border-gray-200">
                 {check.robots_txt ? (
-                  <pre className="text-xs font-mono text-gray-400 mt-3 whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
+                  <pre className="text-xs font-mono text-gray-700 mt-3 whitespace-pre-wrap break-all max-h-64 overflow-y-auto bg-gray-50 rounded-lg p-3">
                     {check.robots_txt}
                   </pre>
                 ) : (
-                  <p className="text-sm text-gray-500 mt-3">
+                  <p className="text-sm text-gray-400 mt-3">
                     robots.txt not found or could not be fetched.
                   </p>
                 )}
@@ -236,12 +236,12 @@ export function CrawlersTab({ projectId }: { projectId: number }) {
           </div>
 
           {/* Tip */}
-          <div className="bg-indigo-950/40 border border-indigo-800 rounded-xl p-4 text-sm text-indigo-300">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-sm text-indigo-700">
             <p className="font-medium mb-1">💡 Tip: Allow AI crawlers</p>
-            <p className="text-indigo-400 text-xs">
+            <p className="text-indigo-600 text-xs">
               To explicitly allow AI crawlers, add entries like this to your robots.txt:
             </p>
-            <pre className="mt-2 text-xs font-mono text-indigo-300 bg-indigo-950/60 rounded p-2">
+            <pre className="mt-2 text-xs font-mono text-indigo-700 bg-white border border-indigo-100 rounded p-2">
 {`User-agent: GPTBot
 Allow: /
 
@@ -254,7 +254,7 @@ Allow: /`}
           </div>
         </>
       ) : (
-        <div className="text-center py-16 text-gray-500 bg-gray-900 border border-gray-800 rounded-xl">
+        <div className="text-center py-16 text-gray-400 bg-white border border-gray-200 rounded-xl shadow-sm">
           <p>Enter your domain and click &quot;Check Now&quot; to analyze AI crawler access</p>
         </div>
       )}

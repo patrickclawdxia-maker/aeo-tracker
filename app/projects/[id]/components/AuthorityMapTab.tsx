@@ -70,17 +70,17 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-gray-800 border border-gray-600 rounded-lg p-3 text-sm shadow-lg">
-      <p className="text-white font-semibold">{d.topic}</p>
-      <p className="text-gray-300">{d.brandName}</p>
+    <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm shadow-lg">
+      <p className="text-gray-900 font-semibold">{d.topic}</p>
+      <p className="text-gray-600">{d.brandName}</p>
       <div className="mt-1 space-y-0.5">
-        <p className="text-indigo-300">
+        <p className="text-indigo-600">
           Authority Score: <span className="font-mono">{d.x.toFixed(1)}</span>
         </p>
-        <p className="text-purple-300">
+        <p className="text-violet-600">
           Mention Rate: <span className="font-mono">{d.y.toFixed(1)}%</span>
         </p>
-        <p className="text-gray-400">
+        <p className="text-gray-500">
           Queries: <span className="font-mono">{d.z}</span>
         </p>
       </div>
@@ -94,16 +94,16 @@ function getTopicStatus(topic: TopicData): {
   color: string;
 } {
   if (topic.opportunity) {
-    return { label: "Opportunity", icon: "🎯", color: "text-blue-400" };
+    return { label: "Opportunity", icon: "🎯", color: "text-blue-600" };
   }
   if (topic.top_score > 60) {
     return {
       label: `Owned by ${topic.top_brand?.name ?? ""}`,
       icon: "👑",
-      color: "text-yellow-400",
+      color: "text-amber-600",
     };
   }
-  return { label: "Contested", icon: "⚔️", color: "text-orange-400" };
+  return { label: "Contested", icon: "⚔️", color: "text-orange-600" };
 }
 
 function sortTopics(topics: TopicData[]): TopicData[] {
@@ -113,6 +113,15 @@ function sortTopics(topics: TopicData[]): TopicData[] {
     const scoreB = b.opportunity ? 0 : b.top_score <= 60 ? 1 : 2;
     return scoreA - scoreB;
   });
+}
+
+function getCategoryBadge(category: string): string {
+  const lower = category.toLowerCase();
+  if (lower.includes("product") || lower.includes("feature")) return "bg-indigo-50 text-indigo-700 border border-indigo-200";
+  if (lower.includes("comparison") || lower.includes("vs")) return "bg-amber-50 text-amber-700 border border-amber-200";
+  if (lower.includes("problem") || lower.includes("pain")) return "bg-red-50 text-red-700 border border-red-200";
+  if (lower.includes("tutorial") || lower.includes("how")) return "bg-green-50 text-green-700 border border-green-200";
+  return "bg-gray-100 text-gray-600 border border-gray-200";
 }
 
 export function AuthorityMapTab({
@@ -192,7 +201,7 @@ export function AuthorityMapTab({
 
   if (loading) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         Loading authority map…
       </div>
     );
@@ -207,10 +216,10 @@ export function AuthorityMapTab({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start gap-4 justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-gray-900">
             Topical Authority Map
           </h2>
-          <p className="text-gray-400 mt-1 text-sm">
+          <p className="text-gray-500 mt-1 text-sm">
             See which topics your brand dominates in AI search vs. where
             competitors win
           </p>
@@ -218,7 +227,7 @@ export function AuthorityMapTab({
         <button
           onClick={buildMap}
           disabled={building}
-          className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 flex-shrink-0"
+          className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 flex-shrink-0 text-sm"
         >
           {building ? (
             <>
@@ -233,11 +242,11 @@ export function AuthorityMapTab({
 
       {/* Building progress */}
       {building && (
-        <div className="bg-indigo-950/50 border border-indigo-800 rounded-xl p-5 animate-pulse">
-          <p className="text-indigo-300 font-medium">
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5 animate-pulse">
+          <p className="text-indigo-700 font-medium">
             🧠 Analyzing queries and computing authority scores…
           </p>
-          <div className="mt-3 h-2 bg-indigo-800 rounded-full overflow-hidden">
+          <div className="mt-3 h-2 bg-indigo-200 rounded-full overflow-hidden">
             <div className="h-full bg-indigo-500 rounded-full animate-[progress_2s_ease-in-out_infinite]" />
           </div>
         </div>
@@ -245,7 +254,7 @@ export function AuthorityMapTab({
 
       {/* Error */}
       {error && (
-        <div className="bg-red-950 border border-red-800 rounded-xl p-4 text-red-300 text-sm">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -257,36 +266,36 @@ export function AuthorityMapTab({
             {
               label: "Topics Tracked",
               value: summary.total_topics,
-              color: "text-white",
-              bg: "bg-gray-900",
+              color: "text-gray-900",
+              bg: "bg-white",
             },
             {
               label: "Dominated",
               value: summary.dominated_topics,
-              color: "text-yellow-400",
-              bg: "bg-gray-900",
+              color: "text-amber-600",
+              bg: "bg-white",
             },
             {
               label: "Contested",
               value: summary.contested_topics,
-              color: "text-orange-400",
-              bg: "bg-gray-900",
+              color: "text-orange-600",
+              bg: "bg-white",
             },
             {
               label: "Opportunities",
               value: summary.opportunity_topics,
-              color: "text-blue-400",
-              bg: "bg-gray-900",
+              color: "text-blue-600",
+              bg: "bg-white",
             },
           ].map((stat) => (
             <div
               key={stat.label}
-              className={`${stat.bg} border border-gray-800 rounded-xl p-4`}
+              className={`${stat.bg} border border-gray-200 rounded-xl p-4 shadow-sm`}
             >
               <p className={`text-2xl font-bold ${stat.color}`}>
                 {stat.value}
               </p>
-              <p className="text-gray-400 text-xs mt-1">{stat.label}</p>
+              <p className="text-gray-500 text-xs mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -294,18 +303,18 @@ export function AuthorityMapTab({
 
       {/* Empty state */}
       {!mapData && !building && (
-        <div className="text-center py-20 bg-gray-900 border border-gray-800 rounded-xl">
+        <div className="text-center py-20 bg-white border border-gray-200 rounded-xl shadow-sm">
           <p className="text-4xl mb-4">🗺</p>
-          <p className="text-white font-semibold text-lg mb-2">
+          <p className="text-gray-900 font-semibold text-lg mb-2">
             No authority map yet
           </p>
-          <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+          <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
             Click Build Map to analyze your tracked queries and generate your
             topical authority map.
           </p>
           <button
             onClick={buildMap}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors text-sm"
           >
             🗺 Build Map
           </button>
@@ -314,8 +323,8 @@ export function AuthorityMapTab({
 
       {/* Bubble Chart */}
       {mapData && mapData.topics.length > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-1">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
             Authority Bubble Map
           </h3>
           <p className="text-sm text-gray-500 mb-6">
@@ -328,25 +337,25 @@ export function AuthorityMapTab({
             {/* Quadrant labels — positioned absolutely */}
             <div className="absolute inset-0 pointer-events-none z-10">
               <div
-                className="absolute text-xs font-semibold text-green-400 bg-green-950/40 px-2 py-1 rounded"
+                className="absolute text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded"
                 style={{ top: "5%", right: "5%" }}
               >
                 👑 Dominating
               </div>
               <div
-                className="absolute text-xs font-semibold text-yellow-400 bg-yellow-950/40 px-2 py-1 rounded"
+                className="absolute text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded"
                 style={{ top: "5%", left: "12%" }}
               >
                 📈 Visible but weak
               </div>
               <div
-                className="absolute text-xs font-semibold text-orange-400 bg-orange-950/40 px-2 py-1 rounded"
+                className="absolute text-xs font-semibold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-1 rounded"
                 style={{ bottom: "12%", right: "5%" }}
               >
                 💤 Underperforming
               </div>
               <div
-                className="absolute text-xs font-semibold text-blue-400 bg-blue-950/40 px-2 py-1 rounded"
+                className="absolute text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded"
                 style={{ bottom: "12%", left: "12%" }}
               >
                 🎯 Opportunity Zone
@@ -359,21 +368,21 @@ export function AuthorityMapTab({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#374151"
-                  opacity={0.5}
+                  stroke="#f0f0f0"
+                  opacity={0.8}
                 />
                 <XAxis
                   type="number"
                   dataKey="x"
                   domain={[0, 100]}
                   name="Authority Score"
-                  tick={{ fill: "#9ca3af", fontSize: 11 }}
-                  axisLine={{ stroke: "#374151" }}
+                  tick={{ fill: "#6b7280", fontSize: 11 }}
+                  axisLine={{ stroke: "#e5e7eb" }}
                   label={{
                     value: "Authority Score →",
                     position: "insideBottom",
                     offset: -15,
-                    fill: "#6b7280",
+                    fill: "#9ca3af",
                     fontSize: 12,
                   }}
                 />
@@ -382,14 +391,14 @@ export function AuthorityMapTab({
                   dataKey="y"
                   domain={[0, 100]}
                   name="Mention Rate %"
-                  tick={{ fill: "#9ca3af", fontSize: 11 }}
-                  axisLine={{ stroke: "#374151" }}
+                  tick={{ fill: "#6b7280", fontSize: 11 }}
+                  axisLine={{ stroke: "#e5e7eb" }}
                   label={{
                     value: "Mention Rate %",
                     angle: -90,
                     position: "insideLeft",
                     offset: 10,
-                    fill: "#6b7280",
+                    fill: "#9ca3af",
                     fontSize: 12,
                   }}
                 />
@@ -397,7 +406,7 @@ export function AuthorityMapTab({
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
                   formatter={(value) => (
-                    <span style={{ color: "#9ca3af", fontSize: 12 }}>
+                    <span style={{ color: "#6b7280", fontSize: 12 }}>
                       {value}
                     </span>
                   )}
@@ -405,13 +414,13 @@ export function AuthorityMapTab({
                 {/* Quadrant dividers */}
                 <ReferenceLine
                   x={50}
-                  stroke="#4b5563"
+                  stroke="#d1d5db"
                   strokeDasharray="6 3"
                   strokeWidth={1}
                 />
                 <ReferenceLine
                   y={50}
-                  stroke="#4b5563"
+                  stroke="#d1d5db"
                   strokeDasharray="6 3"
                   strokeWidth={1}
                 />
@@ -438,7 +447,7 @@ export function AuthorityMapTab({
       {/* Topic Cards Grid */}
       {mapData && mapData.topics.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Topic Breakdown
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -447,15 +456,15 @@ export function AuthorityMapTab({
               return (
                 <div
                   key={topic.topic}
-                  className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-700 transition-colors"
+                  className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 hover:shadow-md transition-all shadow-sm"
                 >
                   {/* Topic header */}
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h4 className="text-white font-semibold text-sm">
+                      <h4 className="text-gray-900 font-semibold text-sm">
                         {topic.topic}
                       </h4>
-                      <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700">
+                      <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${getCategoryBadge(topic.category)}`}>
                         {topic.category}
                       </span>
                     </div>
@@ -480,14 +489,14 @@ export function AuthorityMapTab({
                       return (
                         <div key={brandEntry.brand.id}>
                           <div className="flex items-center justify-between text-xs mb-1">
-                            <span className="text-gray-400 truncate max-w-[120px]">
+                            <span className="text-gray-500 truncate max-w-[120px]">
                               {brandEntry.brand.name}
                             </span>
-                            <span className="text-gray-300 font-mono ml-2 flex-shrink-0">
+                            <span className="text-gray-700 font-mono ml-2 flex-shrink-0">
                               {brandEntry.authority_score.toFixed(0)}
                             </span>
                           </div>
-                          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-500"
                               style={{
@@ -505,7 +514,7 @@ export function AuthorityMapTab({
                   </div>
 
                   {/* Query count */}
-                  <p className="text-xs text-gray-600 mt-3">
+                  <p className="text-xs text-gray-400 mt-3">
                     Based on {topic.query_count} quer
                     {topic.query_count !== 1 ? "ies" : "y"}
                   </p>

@@ -53,12 +53,12 @@ export function TrendsTab({ projectId }: { projectId: number }) {
   }, [projectId]);
 
   if (loading) {
-    return <div className="text-center py-16 text-gray-500">Loading trends…</div>;
+    return <div className="text-center py-16 text-gray-400">Loading trends…</div>;
   }
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         No historical data yet. Run analysis multiple times to see trends.
       </div>
     );
@@ -109,7 +109,7 @@ export function TrendsTab({ projectId }: { projectId: number }) {
     <div className="space-y-6">
       {/* Engine Filter */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-400">Engine:</span>
+        <span className="text-sm text-gray-500">Engine:</span>
         <div className="flex gap-2">
           {ENGINE_OPTIONS.map((opt) => (
             <button
@@ -118,7 +118,7 @@ export function TrendsTab({ projectId }: { projectId: number }) {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 engineFilter === opt.id
                   ? "bg-indigo-600 text-white"
-                  : "bg-gray-800 text-gray-400 hover:text-gray-200"
+                  : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
               }`}
             >
               {opt.label}
@@ -128,21 +128,21 @@ export function TrendsTab({ projectId }: { projectId: number }) {
       </div>
 
       {/* Line Chart */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
           Visibility Trends Over Time
         </h3>
         {!hasData ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-400">
             No data for this engine filter.
           </div>
         ) : chartData.length < 2 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-400">
             Need at least 2 runs to show a trend. Run analysis again later.
             <div className="mt-4">
-              <div className="text-sm text-gray-400">Current data point:</div>
+              <div className="text-sm text-gray-500">Current data point:</div>
               {chartData.map((pt, i) => (
-                <div key={i} className="text-sm text-gray-300 mt-1">
+                <div key={i} className="text-sm text-gray-700 mt-1">
                   {pt.date as string}: {history.map((bh) => `${bh.brand.name}: ${pt[bh.brand.name]}%`).join(", ")}
                 </div>
               ))}
@@ -151,29 +151,29 @@ export function TrendsTab({ projectId }: { projectId: number }) {
         ) : (
           <ResponsiveContainer width="100%" height={350}>
             <LineChart data={chartData} margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="date"
-                tick={{ fill: "#9ca3af", fontSize: 11 }}
-                axisLine={{ stroke: "#374151" }}
+                tick={{ fill: "#6b7280", fontSize: 11 }}
+                axisLine={{ stroke: "#e5e7eb" }}
               />
               <YAxis
                 domain={[0, 100]}
                 tickFormatter={(v) => `${v}%`}
-                tick={{ fill: "#9ca3af", fontSize: 11 }}
-                axisLine={{ stroke: "#374151" }}
+                tick={{ fill: "#6b7280", fontSize: 11 }}
+                axisLine={{ stroke: "#e5e7eb" }}
               />
               <Tooltip
                 formatter={(value, name) => [`${value}%`, name]}
                 contentStyle={{
-                  background: "#1f2937",
-                  border: "1px solid #374151",
+                  background: "white",
+                  border: "1px solid #e5e7eb",
                   borderRadius: 8,
                 }}
-                labelStyle={{ color: "#f9fafb" }}
+                labelStyle={{ color: "#111827" }}
               />
               <Legend
-                wrapperStyle={{ color: "#9ca3af", fontSize: 12 }}
+                wrapperStyle={{ color: "#6b7280", fontSize: 12 }}
               />
               {history.map((bh, idx) => (
                 <Line
@@ -193,15 +193,15 @@ export function TrendsTab({ projectId }: { projectId: number }) {
 
       {/* Stats table */}
       {chartData.length >= 2 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Run History</h3>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Run History</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-gray-400 border-b border-gray-800">
-                  <th className="text-left pb-3 pr-4">Date</th>
+                <tr className="text-gray-500 border-b border-gray-200">
+                  <th className="text-left pb-3 pr-4 text-xs uppercase tracking-wide font-medium">Date</th>
                   {history.map((bh) => (
-                    <th key={bh.brand.id} className="text-right pb-3 px-3">
+                    <th key={bh.brand.id} className="text-right pb-3 px-3 text-xs uppercase tracking-wide font-medium">
                       {bh.brand.name}
                     </th>
                   ))}
@@ -209,10 +209,10 @@ export function TrendsTab({ projectId }: { projectId: number }) {
               </thead>
               <tbody>
                 {chartData.map((pt, i) => (
-                  <tr key={i} className="border-b border-gray-800/50">
-                    <td className="py-3 pr-4 text-gray-300">{pt.date as string}</td>
+                  <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-3 pr-4 text-gray-700">{pt.date as string}</td>
                     {history.map((bh) => (
-                      <td key={bh.brand.id} className="text-right py-3 px-3 text-indigo-300 font-mono">
+                      <td key={bh.brand.id} className="text-right py-3 px-3 text-indigo-600 font-mono">
                         {pt[bh.brand.name] as number}%
                       </td>
                     ))}

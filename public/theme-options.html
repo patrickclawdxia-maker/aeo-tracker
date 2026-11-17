@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEO Tracker — Theme Options</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .option { scroll-margin-top: 20px; }
+</style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="max-w-5xl mx-auto py-8 px-4 space-y-16">
+
+  <h1 class="text-3xl font-bold text-gray-900 text-center">AEO Tracker — Design Options</h1>
+  <p class="text-center text-gray-500 -mt-10">Pick A, B, or C</p>
+
+  <!-- NAV COMPARISON -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-gray-700">🔝 Navigation Bar</h2>
+    <div class="space-y-3">
+
+      <!-- Option A: Linear -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">A — Clean SaaS (Linear)</span>
+        <nav class="mt-1 border border-gray-200 bg-white px-6 h-14 flex items-center gap-6 rounded-xl">
+          <span class="font-semibold text-sm text-gray-900">🤖 AEO Tracker</span>
+          <span class="text-xs text-gray-400 border border-gray-200 px-2 py-0.5 rounded-md">AI Engine Optimization</span>
+          <div class="flex-1"></div>
+          <span class="text-xs text-gray-500">12 / 50 queries</span>
+          <div class="w-24 h-1 bg-gray-100 rounded-full overflow-hidden"><div class="h-full w-1/4 bg-gray-900 rounded-full"></div></div>
+          <span class="text-sm text-gray-600">Patrick</span>
+          <span class="text-sm text-gray-400 cursor-pointer hover:text-gray-700">Sign out</span>
+        </nav>
+        <p class="text-xs text-gray-400 mt-1">White, no shadow. Mono-weight. Gray-900 accents. Very minimal — dev-tool aesthetic.</p>
+      </div>
+
+      <!-- Option B: Warm Professional -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">B — Warm Professional (Notion/Vercel)</span>
+        <nav class="mt-1 border border-gray-200 bg-white shadow-sm px-6 h-14 flex items-center gap-6 rounded-xl">
+          <span class="font-bold text-sm text-indigo-600">🤖 AEO Tracker</span>
+          <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-medium">AI Engine Optimization</span>
+          <div class="flex-1"></div>
+          <div class="flex flex-col items-end gap-0.5">
+            <span class="text-xs text-gray-400">12 / 50 queries today</span>
+            <div class="w-24 h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full w-1/4 bg-indigo-500 rounded-full"></div></div>
+          </div>
+          <span class="text-sm text-gray-700">Patrick</span>
+          <button class="text-sm text-gray-400 hover:text-gray-600">Sign out</button>
+        </nav>
+        <p class="text-xs text-gray-400 mt-1">White + subtle shadow. Indigo-600 logo. Rounded pill badge. Soft quota bar. Warm and approachable.</p>
+      </div>
+
+      <!-- Option C: Bold Modern -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">C — Bold Modern (Stripe-style)</span>
+        <nav class="mt-1 bg-white border-b-2 border-indigo-500 px-6 h-14 flex items-center gap-6 rounded-t-xl shadow-md">
+          <span class="font-extrabold text-sm bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">🤖 AEO Tracker</span>
+          <span class="text-xs bg-gradient-to-r from-indigo-100 to-violet-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">AI Engine Optimization</span>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-1.5 bg-indigo-50 px-3 py-1 rounded-full">
+            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+            <span class="text-xs text-indigo-700 font-medium">12 / 50 queries</span>
+          </div>
+          <span class="text-sm font-medium text-gray-800">Patrick</span>
+          <button class="text-xs text-white bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg font-medium">Sign out</button>
+        </nav>
+        <p class="text-xs text-gray-400 mt-1">Gradient logo. Indigo bottom border accent. Bold typography. More visual impact.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD CARDS -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-gray-700">📊 Dashboard — Project Cards</h2>
+    <div class="grid grid-cols-3 gap-6">
+
+      <!-- A: Linear -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">A — Linear</span>
+        <div class="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-400 transition-all cursor-pointer">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-medium text-gray-900 text-sm">CRM Software Tracker</h3>
+            <span class="text-xs text-gray-400">↗</span>
+          </div>
+          <div class="flex gap-4 text-xs text-gray-500 mb-4">
+            <span>4 brands</span>
+            <span>10 queries</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">Last run 2h ago</span>
+            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Thin border. Gray hover. Dot indicator. Minimal.</p>
+      </div>
+
+      <!-- B: Warm -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">B — Warm Pro</span>
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-semibold text-gray-900">CRM Software Tracker</h3>
+            <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium border border-green-200">Active</span>
+          </div>
+          <div class="flex gap-3 mb-4">
+            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">4 brands</span>
+            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">10 queries</span>
+          </div>
+          <div class="flex items-center justify-between text-xs text-gray-400">
+            <span>Last run 2h ago</span>
+            <span class="text-indigo-600 font-medium">View →</span>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Rounded corners. Indigo hover border. Pill badges. Friendly.</p>
+      </div>
+
+      <!-- C: Bold -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">C — Bold</span>
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all cursor-pointer group">
+          <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl flex items-center justify-center text-white font-bold text-lg mb-3">C</div>
+          <h3 class="font-bold text-gray-900 mb-1">CRM Software Tracker</h3>
+          <p class="text-xs text-gray-500 mb-4">4 brands · 10 queries · Last run 2h ago</p>
+          <div class="flex gap-2">
+            <div class="flex-1 bg-indigo-50 rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-indigo-600">82%</div>
+              <div class="text-xs text-gray-500">Salesforce</div>
+            </div>
+            <div class="flex-1 bg-violet-50 rounded-lg p-2 text-center">
+              <div class="text-lg font-bold text-violet-600">74%</div>
+              <div class="text-xs text-gray-500">HubSpot</div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1">Colored icon. Mini stat preview. Richer info density.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-gray-700">📈 Stat Cards (Overview Tab)</h2>
+    <div class="grid grid-cols-3 gap-6">
+
+      <!-- A -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">A — Linear</span>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Mention Rate</div>
+            <div class="text-2xl font-semibold text-gray-900">82%</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Avg Position</div>
+            <div class="text-2xl font-semibold text-gray-900">1.4</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Mentions</div>
+            <div class="text-2xl font-semibold text-gray-900">246</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-4">
+            <div class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Share of Voice</div>
+            <div class="text-2xl font-semibold text-gray-900">41%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">B — Warm Pro</span>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div class="text-xs font-medium text-gray-500 mb-1">Mention Rate</div>
+            <div class="text-2xl font-bold text-gray-900">82%</div>
+            <div class="text-xs text-green-600 mt-1">↑ +5% from last run</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div class="text-xs font-medium text-gray-500 mb-1">Avg Position</div>
+            <div class="text-2xl font-bold text-gray-900">1.4</div>
+            <div class="text-xs text-green-600 mt-1">↑ improved</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div class="text-xs font-medium text-gray-500 mb-1">Total Mentions</div>
+            <div class="text-2xl font-bold text-gray-900">246</div>
+            <div class="text-xs text-gray-400 mt-1">across 3 engines</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div class="text-xs font-medium text-gray-500 mb-1">Share of Voice</div>
+            <div class="text-2xl font-bold text-indigo-600">41%</div>
+            <div class="text-xs text-gray-400 mt-1">of all brand mentions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">C — Bold</span>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-indigo-600 rounded-xl p-4 text-white">
+            <div class="text-xs font-medium text-indigo-200 mb-1">Mention Rate</div>
+            <div class="text-2xl font-bold">82%</div>
+            <div class="text-xs text-indigo-200 mt-1">↑ +5% this week</div>
+          </div>
+          <div class="bg-violet-600 rounded-xl p-4 text-white">
+            <div class="text-xs font-medium text-violet-200 mb-1">Avg Position</div>
+            <div class="text-2xl font-bold">1.4</div>
+            <div class="text-xs text-violet-200 mt-1">↑ improved</div>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-4">
+            <div class="text-xs font-medium text-gray-500 mb-1">Total Mentions</div>
+            <div class="text-2xl font-bold text-gray-900">246</div>
+            <div class="text-xs text-gray-400 mt-1">across 3 engines</div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div class="text-xs font-medium text-amber-700 mb-1">Share of Voice</div>
+            <div class="text-2xl font-bold text-amber-700">41%</div>
+            <div class="text-xs text-amber-500 mt-1">of all brand mentions</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-gray-700">🗂 Tab Navigation</h2>
+    <div class="space-y-4">
+
+      <!-- A -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">A — Linear (underline tabs)</span>
+        <div class="border-b border-gray-200 flex gap-6 bg-white px-4 rounded-t-xl">
+          <button class="py-3 text-sm font-medium text-gray-900 border-b-2 border-gray-900 -mb-px">Overview</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">By Engine</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">Queries</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">Clusters</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">Trends</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">Citations</button>
+          <button class="py-3 text-sm font-medium text-gray-400 hover:text-gray-600">Authority Map</button>
+        </div>
+      </div>
+
+      <!-- B -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">B — Warm Pro (indigo underline)</span>
+        <div class="border-b border-gray-200 flex gap-1 bg-white px-2 rounded-t-xl">
+          <button class="py-3 px-3 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600 -mb-px">Overview</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">By Engine</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">Queries</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">Clusters</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">Trends</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">Citations</button>
+          <button class="py-3 px-3 text-sm font-medium text-gray-500 hover:text-gray-700">Authority Map</button>
+        </div>
+      </div>
+
+      <!-- C -->
+      <div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">C — Bold (pill tabs)</span>
+        <div class="flex gap-2 bg-gray-100 p-1.5 rounded-xl w-fit">
+          <button class="py-1.5 px-4 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm">Overview</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">By Engine</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">Queries</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">Clusters</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">Trends</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">Citations</button>
+          <button class="py-1.5 px-4 text-sm font-medium text-gray-600 hover:bg-white rounded-lg">Authority Map</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NOTE -->
+  <div class="bg-white border border-gray-200 rounded-xl p-6 text-center">
+    <p class="text-gray-700 font-medium">Which do you prefer? Or mix & match (e.g. "B nav + C stat cards + B tabs")</p>
+    <p class="text-gray-400 text-sm mt-1">The sub-agent already started applying Option B — easy to adjust to any direction.</p>
+  </div>
+
+</div>
+</body>
+</html>

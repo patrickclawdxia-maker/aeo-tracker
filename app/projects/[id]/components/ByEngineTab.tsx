@@ -35,12 +35,12 @@ function MentionRateCell({ value }: { value: number }) {
   const pct = Math.min(100, value);
   const bg =
     pct >= 70
-      ? "bg-green-900/60 text-green-400 border-green-800"
+      ? "bg-green-50 text-green-700 border-green-200"
       : pct >= 40
-      ? "bg-yellow-900/60 text-yellow-400 border-yellow-800"
+      ? "bg-amber-50 text-amber-700 border-amber-200"
       : pct > 0
-      ? "bg-blue-900/60 text-blue-400 border-blue-800"
-      : "bg-gray-900 text-gray-600 border-gray-800";
+      ? "bg-blue-50 text-blue-700 border-blue-200"
+      : "bg-gray-50 text-gray-400 border-gray-200";
   return (
     <span
       className={`inline-block px-2 py-0.5 rounded border text-xs font-mono ${bg}`}
@@ -53,7 +53,7 @@ function MentionRateCell({ value }: { value: number }) {
 export function ByEngineTab({ results }: { results: BrandResult[] }) {
   if (results.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         No results yet. Run an analysis first.
       </div>
     );
@@ -71,8 +71,8 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
   return (
     <div className="space-y-8">
       {/* Grouped Bar Chart */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
           Mention Rate by Engine (%)
         </h3>
         <ResponsiveContainer width="100%" height={Math.max(300, results.length * 60)}>
@@ -83,20 +83,20 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#374151"
+              stroke="#f0f0f0"
               horizontal={false}
             />
             <XAxis
               type="number"
               domain={[0, 100]}
               tickFormatter={(v) => `${v}%`}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#374151" }}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+              axisLine={{ stroke: "#e5e7eb" }}
             />
             <YAxis
               type="category"
               dataKey="brand"
-              tick={{ fill: "#d1d5db", fontSize: 12 }}
+              tick={{ fill: "#374151", fontSize: 12 }}
               axisLine={false}
               width={110}
             />
@@ -105,14 +105,14 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
                 `${value}%`,
               ]}
               contentStyle={{
-                background: "#1f2937",
-                border: "1px solid #374151",
+                background: "white",
+                border: "1px solid #e5e7eb",
                 borderRadius: 8,
               }}
-              labelStyle={{ color: "#f9fafb" }}
+              labelStyle={{ color: "#111827" }}
             />
             <Legend
-              wrapperStyle={{ color: "#9ca3af", paddingTop: 16, fontSize: 13 }}
+              wrapperStyle={{ color: "#6b7280", paddingTop: 16, fontSize: 13 }}
             />
             {engines.map((engine) => (
               <Bar
@@ -127,28 +127,28 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
       </div>
 
       {/* Heatmap Table */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <h3 className="font-semibold text-white">Mention Rate Matrix</h3>
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="font-semibold text-gray-900">Mention Rate Matrix</h3>
           <p className="text-sm text-gray-500 mt-1">% of queries where brand was mentioned</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-400">
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Brand
                 </th>
                 {engines.map((e) => (
                   <th
                     key={e.id}
-                    className="px-6 py-3 text-sm font-medium text-center"
+                    className="px-6 py-3 text-xs font-medium text-center uppercase tracking-wide"
                     style={{ color: ENGINE_COLORS[e.id] ?? "#6366f1" }}
                   >
                     {e.name}
                   </th>
                 ))}
-                <th className="px-6 py-3 text-sm font-medium text-gray-400 text-center">
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide text-center">
                   Avg
                 </th>
               </tr>
@@ -177,11 +177,11 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
                   return (
                     <tr
                       key={r.brand.id}
-                      className={`border-b border-gray-800/50 ${
-                        idx % 2 === 0 ? "" : "bg-gray-800/20"
+                      className={`border-b border-gray-100 hover:bg-gray-50 ${
+                        idx % 2 === 0 ? "" : "bg-gray-50/50"
                       }`}
                     >
-                      <td className="px-6 py-4 font-medium text-white">
+                      <td className="px-6 py-4 font-medium text-gray-900">
                         {r.brand.name}
                       </td>
                       {engines.map((e) => (
@@ -203,22 +203,22 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
       </div>
 
       {/* Position Table */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <h3 className="font-semibold text-white">Avg Position by Engine</h3>
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="font-semibold text-gray-900">Avg Position by Engine</h3>
           <p className="text-sm text-gray-500 mt-1">Lower = mentioned earlier (better)</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-400">
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Brand
                 </th>
                 {engines.map((e) => (
                   <th
                     key={e.id}
-                    className="px-6 py-3 text-sm font-medium text-center"
+                    className="px-6 py-3 text-xs font-medium text-center uppercase tracking-wide"
                     style={{ color: ENGINE_COLORS[e.id] ?? "#6366f1" }}
                   >
                     {e.name}
@@ -230,11 +230,11 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
               {results.map((r, idx) => (
                 <tr
                   key={r.brand.id}
-                  className={`border-b border-gray-800/50 ${
-                    idx % 2 === 0 ? "" : "bg-gray-800/20"
+                  className={`border-b border-gray-100 hover:bg-gray-50 ${
+                    idx % 2 === 0 ? "" : "bg-gray-50/50"
                   }`}
                 >
-                  <td className="px-6 py-4 font-medium text-white">
+                  <td className="px-6 py-4 font-medium text-gray-900">
                     {r.brand.name}
                   </td>
                   {engines.map((e) => {
@@ -242,11 +242,11 @@ export function ByEngineTab({ results }: { results: BrandResult[] }) {
                     return (
                       <td key={e.id} className="px-6 py-4 text-center">
                         {pos && pos > 0 ? (
-                          <span className="inline-block px-2 py-0.5 rounded bg-purple-900/40 text-purple-400 border border-purple-800 text-xs font-mono">
+                          <span className="inline-block px-2 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200 text-xs font-mono">
                             #{pos.toFixed(1)}
                           </span>
                         ) : (
-                          <span className="text-gray-600 text-xs">—</span>
+                          <span className="text-gray-400 text-xs">—</span>
                         )}
                       </td>
                     );

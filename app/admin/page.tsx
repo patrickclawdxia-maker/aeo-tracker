@@ -12,8 +12,8 @@ export default async function AdminPage({
 }) {
   if (searchParams.key !== process.env.ADMIN_SECRET) {
     return (
-      <div className="min-h-screen bg-gray-950 p-8">
-        <div className="text-red-400 font-mono text-sm">
+      <div className="min-h-screen bg-slate-50 p-8">
+        <div className="text-red-600 font-mono text-sm">
           401 Unauthorized — provide ?key= query param
         </div>
       </div>
@@ -177,18 +177,18 @@ export default async function AdminPage({
   });
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-6 font-mono">
+    <div className="min-h-screen bg-slate-50 text-gray-900 p-6 font-mono">
       {/* Header */}
-      <div className="mb-6 border-b border-gray-800 pb-4">
+      <div className="mb-6 border-b border-slate-200 pb-4">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-indigo-400">
+            <h1 className="text-2xl font-bold text-indigo-600">
               🔬 AEO Tracker — Admin Analytics
             </h1>
-            <p className="text-xs text-gray-500 mt-1">{now} PST</p>
+            <p className="text-xs text-slate-400 mt-1">{now} PST</p>
           </div>
-          <div className="text-xs text-gray-600">
-            Key: <span className="text-gray-400">{keyDisplay}</span>
+          <div className="text-xs text-slate-400">
+            Key: <span className="text-slate-600">{keyDisplay}</span>
           </div>
         </div>
       </div>
@@ -196,40 +196,40 @@ export default async function AdminPage({
       {/* Row 1 — Summary Cards */}
       <div className="grid grid-cols-5 gap-4 mb-8">
         {[
-          { label: "Total Users", value: totalUsers, color: "text-indigo-400" },
-          { label: "Total Projects", value: totalProjects, color: "text-emerald-400" },
-          { label: "Total Runs", value: `${runStats.completed}/${totalRuns}`, color: "text-blue-400" },
-          { label: "Events (30d)", value: totalEvents30d, color: "text-purple-400" },
-          { label: "Active Sessions (30m)", value: activeSessions, color: "text-yellow-400" },
+          { label: "Total Users", value: totalUsers, color: "text-indigo-600" },
+          { label: "Total Projects", value: totalProjects, color: "text-emerald-600" },
+          { label: "Total Runs", value: `${runStats.completed}/${totalRuns}`, color: "text-blue-600" },
+          { label: "Events (30d)", value: totalEvents30d, color: "text-violet-600" },
+          { label: "Active Sessions (30m)", value: activeSessions, color: "text-amber-600" },
         ].map((card) => (
           <div
             key={card.label}
-            className="bg-gray-900 border border-gray-800 rounded-lg p-4"
+            className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm"
           >
             <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
-            <div className="text-xs text-gray-500 mt-1">{card.label}</div>
+            <div className="text-xs text-slate-500 mt-1">{card.label}</div>
           </div>
         ))}
       </div>
 
       {/* New Users (7d) */}
       {newUsersLast7.length > 0 && (
-        <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-          <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+        <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+          <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
             New Users — Last 7 Days
           </h2>
           <table className="text-xs w-full">
             <thead>
-              <tr className="text-gray-500 border-b border-gray-800">
+              <tr className="text-slate-400 border-b border-slate-200">
                 <th className="text-left py-1 pr-4">Day</th>
                 <th className="text-right py-1">Count</th>
               </tr>
             </thead>
             <tbody>
               {newUsersLast7.map((row) => (
-                <tr key={row.day} className="border-b border-gray-800/50">
-                  <td className="py-1 pr-4 text-gray-300">{row.day}</td>
-                  <td className="py-1 text-right text-emerald-400">{row.count}</td>
+                <tr key={row.day} className="border-b border-slate-100">
+                  <td className="py-1 pr-4 text-slate-600">{row.day}</td>
+                  <td className="py-1 text-right text-emerald-600">{row.count}</td>
                 </tr>
               ))}
             </tbody>
@@ -238,16 +238,16 @@ export default async function AdminPage({
       )}
 
       {/* Row 2 — DAU */}
-      <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+      <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
           Daily Active Users — Last 14 Days
         </h2>
         {dauRows.length === 0 ? (
-          <p className="text-xs text-gray-600">No data yet</p>
+          <p className="text-xs text-slate-400">No data yet</p>
         ) : (
           <table className="text-xs w-full">
             <thead>
-              <tr className="text-gray-500 border-b border-gray-800">
+              <tr className="text-slate-400 border-b border-slate-200">
                 <th className="text-left py-1 pr-4">Day</th>
                 <th className="text-right py-1 pr-4">DAU</th>
                 <th className="text-left py-1">Bar</th>
@@ -257,10 +257,10 @@ export default async function AdminPage({
               {dauRows.map((row) => {
                 const barLen = Math.round((row.dau / maxDau) * 30);
                 return (
-                  <tr key={row.day} className="border-b border-gray-800/50">
-                    <td className="py-1 pr-4 text-gray-300">{row.day}</td>
-                    <td className="py-1 pr-4 text-right text-indigo-400">{row.dau}</td>
-                    <td className="py-1 text-indigo-500">{"█".repeat(barLen)}</td>
+                  <tr key={row.day} className="border-b border-slate-100">
+                    <td className="py-1 pr-4 text-slate-600">{row.day}</td>
+                    <td className="py-1 pr-4 text-right text-indigo-600">{row.dau}</td>
+                    <td className="py-1 text-indigo-400">{"█".repeat(barLen)}</td>
                   </tr>
                 );
               })}
@@ -271,16 +271,16 @@ export default async function AdminPage({
 
       {/* Row 3 — Two columns: Top Events + Tab Popularity */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-          <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+          <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
             Top Events — Last 30 Days
           </h2>
           {topEvents.length === 0 ? (
-            <p className="text-xs text-gray-600">No data yet</p>
+            <p className="text-xs text-slate-400">No data yet</p>
           ) : (
             <table className="text-xs w-full">
               <thead>
-                <tr className="text-gray-500 border-b border-gray-800">
+                <tr className="text-slate-400 border-b border-slate-200">
                   <th className="text-left py-1 pr-3">Event</th>
                   <th className="text-left py-1 pr-3">Category</th>
                   <th className="text-right py-1">Count</th>
@@ -288,10 +288,10 @@ export default async function AdminPage({
               </thead>
               <tbody>
                 {topEvents.map((e, i) => (
-                  <tr key={i} className="border-b border-gray-800/50">
-                    <td className="py-1 pr-3 text-gray-200">{e.event}</td>
-                    <td className="py-1 pr-3 text-gray-500">{e.category}</td>
-                    <td className="py-1 text-right text-indigo-400">{e.count}</td>
+                  <tr key={i} className="border-b border-slate-100">
+                    <td className="py-1 pr-3 text-slate-700">{e.event}</td>
+                    <td className="py-1 pr-3 text-slate-400">{e.category}</td>
+                    <td className="py-1 text-right text-indigo-600">{e.count}</td>
                   </tr>
                 ))}
               </tbody>
@@ -299,25 +299,25 @@ export default async function AdminPage({
           )}
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-          <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+          <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
             Tab Popularity
           </h2>
           {tabPopularity.length === 0 ? (
-            <p className="text-xs text-gray-600">No data yet</p>
+            <p className="text-xs text-slate-400">No data yet</p>
           ) : (
             <table className="text-xs w-full">
               <thead>
-                <tr className="text-gray-500 border-b border-gray-800">
+                <tr className="text-slate-400 border-b border-slate-200">
                   <th className="text-left py-1 pr-4">Tab</th>
                   <th className="text-right py-1">Views</th>
                 </tr>
               </thead>
               <tbody>
                 {tabPopularity.map((t, i) => (
-                  <tr key={i} className="border-b border-gray-800/50">
-                    <td className="py-1 pr-4 text-gray-200">{t.tab}</td>
-                    <td className="py-1 text-right text-purple-400">{t.views}</td>
+                  <tr key={i} className="border-b border-slate-100">
+                    <td className="py-1 pr-4 text-slate-700">{t.tab}</td>
+                    <td className="py-1 text-right text-violet-600">{t.views}</td>
                   </tr>
                 ))}
               </tbody>
@@ -327,16 +327,16 @@ export default async function AdminPage({
       </div>
 
       {/* Row 4 — Feature Adoption */}
-      <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+      <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
           Feature Adoption
         </h2>
         {featureAdoption.length === 0 ? (
-          <p className="text-xs text-gray-600">No data yet</p>
+          <p className="text-xs text-slate-400">No data yet</p>
         ) : (
           <table className="text-xs w-full">
             <thead>
-              <tr className="text-gray-500 border-b border-gray-800">
+              <tr className="text-slate-400 border-b border-slate-200">
                 <th className="text-left py-1 pr-4">Feature Event</th>
                 <th className="text-right py-1 pr-4">Unique Users</th>
                 <th className="text-right py-1">Total Uses</th>
@@ -344,10 +344,10 @@ export default async function AdminPage({
             </thead>
             <tbody>
               {featureAdoption.map((f, i) => (
-                <tr key={i} className="border-b border-gray-800/50">
-                  <td className="py-1 pr-4 text-gray-200">{f.event}</td>
-                  <td className="py-1 pr-4 text-right text-emerald-400">{f.unique_users}</td>
-                  <td className="py-1 text-right text-blue-400">{f.total}</td>
+                <tr key={i} className="border-b border-slate-100">
+                  <td className="py-1 pr-4 text-slate-700">{f.event}</td>
+                  <td className="py-1 pr-4 text-right text-emerald-600">{f.unique_users}</td>
+                  <td className="py-1 text-right text-blue-600">{f.total}</td>
                 </tr>
               ))}
             </tbody>
@@ -356,16 +356,16 @@ export default async function AdminPage({
       </div>
 
       {/* Row 5 — Users Table */}
-      <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+      <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
           Users
         </h2>
         {userRows.length === 0 ? (
-          <p className="text-xs text-gray-600">No users yet</p>
+          <p className="text-xs text-slate-400">No users yet</p>
         ) : (
           <table className="text-xs w-full">
             <thead>
-              <tr className="text-gray-500 border-b border-gray-800">
+              <tr className="text-slate-400 border-b border-slate-200">
                 <th className="text-left py-1 pr-4">Email</th>
                 <th className="text-right py-1 pr-4">Projects</th>
                 <th className="text-right py-1 pr-4">Last Project</th>
@@ -374,15 +374,15 @@ export default async function AdminPage({
             </thead>
             <tbody>
               {userRows.map((u, i) => (
-                <tr key={i} className="border-b border-gray-800/50">
-                  <td className="py-1 pr-4 text-gray-200">{u.email}</td>
-                  <td className="py-1 pr-4 text-right text-indigo-400">{u.project_count}</td>
-                  <td className="py-1 pr-4 text-right text-gray-500">
+                <tr key={i} className="border-b border-slate-100">
+                  <td className="py-1 pr-4 text-slate-700">{u.email}</td>
+                  <td className="py-1 pr-4 text-right text-indigo-600">{u.project_count}</td>
+                  <td className="py-1 pr-4 text-right text-slate-400">
                     {u.last_project
                       ? new Date(u.last_project).toLocaleDateString()
                       : "—"}
                   </td>
-                  <td className="py-1 text-right text-gray-500">
+                  <td className="py-1 text-right text-slate-400">
                     {new Date(u.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -393,16 +393,16 @@ export default async function AdminPage({
       </div>
 
       {/* Row 6 — Page Views */}
-      <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+      <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
           Top Page Views — Last 30 Days
         </h2>
         {pageViews.length === 0 ? (
-          <p className="text-xs text-gray-600">No data yet</p>
+          <p className="text-xs text-slate-400">No data yet</p>
         ) : (
           <table className="text-xs w-full">
             <thead>
-              <tr className="text-gray-500 border-b border-gray-800">
+              <tr className="text-slate-400 border-b border-slate-200">
                 <th className="text-left py-1 pr-4">Path</th>
                 <th className="text-right py-1 pr-4">Views</th>
                 <th className="text-right py-1">Sessions</th>
@@ -410,10 +410,10 @@ export default async function AdminPage({
             </thead>
             <tbody>
               {pageViews.map((pv, i) => (
-                <tr key={i} className="border-b border-gray-800/50">
-                  <td className="py-1 pr-4 text-gray-200">{pv.path}</td>
-                  <td className="py-1 pr-4 text-right text-indigo-400">{pv.views}</td>
-                  <td className="py-1 text-right text-purple-400">{pv.sessions}</td>
+                <tr key={i} className="border-b border-slate-100">
+                  <td className="py-1 pr-4 text-slate-700">{pv.path}</td>
+                  <td className="py-1 pr-4 text-right text-indigo-600">{pv.views}</td>
+                  <td className="py-1 text-right text-violet-600">{pv.sessions}</td>
                 </tr>
               ))}
             </tbody>
@@ -422,22 +422,22 @@ export default async function AdminPage({
       </div>
 
       {/* Run Stats */}
-      <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-3">
+      <div className="mb-8 bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+        <h2 className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-3">
           Analysis Run Stats
         </h2>
         <div className="flex gap-8 text-xs">
           <div>
-            <span className="text-gray-500">Total: </span>
-            <span className="text-gray-200">{runStats.total_runs}</span>
+            <span className="text-slate-400">Total: </span>
+            <span className="text-slate-700">{runStats.total_runs}</span>
           </div>
           <div>
-            <span className="text-gray-500">Completed: </span>
-            <span className="text-emerald-400">{runStats.completed}</span>
+            <span className="text-slate-400">Completed: </span>
+            <span className="text-emerald-600">{runStats.completed}</span>
           </div>
           <div>
-            <span className="text-gray-500">Failed: </span>
-            <span className="text-red-400">{runStats.failed}</span>
+            <span className="text-slate-400">Failed: </span>
+            <span className="text-red-600">{runStats.failed}</span>
           </div>
         </div>
       </div>

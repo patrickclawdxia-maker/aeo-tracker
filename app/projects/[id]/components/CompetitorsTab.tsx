@@ -55,12 +55,12 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
   }, [projectId]);
 
   if (loading) {
-    return <div className="text-center py-16 text-gray-500">Loading competitors…</div>;
+    return <div className="text-center py-16 text-gray-400">Loading competitors…</div>;
   }
 
   if (sov.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         No data yet. Run analysis to see competitor benchmarking.
       </div>
     );
@@ -85,8 +85,8 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
   return (
     <div className="space-y-8">
       {/* Pie Chart */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-2">Overall Share of Voice</h3>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Overall Share of Voice</h3>
         <p className="text-sm text-gray-500 mb-6">
           Proportion of brand mentions across all AI engines in the latest run
         </p>
@@ -111,15 +111,15 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
               <Tooltip
                 formatter={(value) => [`${value}%`, "Share of Voice"]}
                 contentStyle={{
-                  background: "#1f2937",
-                  border: "1px solid #374151",
+                  background: "white",
+                  border: "1px solid #e5e7eb",
                   borderRadius: 8,
                 }}
-                labelStyle={{ color: "#f9fafb" }}
+                labelStyle={{ color: "#111827" }}
               />
               <Legend
                 formatter={(value) => (
-                  <span style={{ color: "#9ca3af", fontSize: 12 }}>{value}</span>
+                  <span style={{ color: "#6b7280", fontSize: 12 }}>{value}</span>
                 )}
               />
             </PieChart>
@@ -128,37 +128,37 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
       </div>
 
       {/* Grouped Bar Chart */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-2">Mention Rate by Engine</h3>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Mention Rate by Engine</h3>
         <p className="text-sm text-gray-500 mb-6">
           How often each brand appears in responses per engine
         </p>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={barData} margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis
               dataKey="engine"
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#374151" }}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+              axisLine={{ stroke: "#e5e7eb" }}
             />
             <YAxis
               domain={[0, 100]}
               tickFormatter={(v) => `${v}%`}
-              tick={{ fill: "#9ca3af", fontSize: 11 }}
-              axisLine={{ stroke: "#374151" }}
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={{ stroke: "#e5e7eb" }}
             />
             <Tooltip
               formatter={(value, name) => [`${value}%`, name]}
               contentStyle={{
-                background: "#1f2937",
-                border: "1px solid #374151",
+                background: "white",
+                border: "1px solid #e5e7eb",
                 borderRadius: 8,
               }}
-              labelStyle={{ color: "#f9fafb" }}
+              labelStyle={{ color: "#111827" }}
             />
             <Legend
               formatter={(value) => (
-                <span style={{ color: "#9ca3af", fontSize: 12 }}>{value}</span>
+                <span style={{ color: "#6b7280", fontSize: 12 }}>{value}</span>
               )}
             />
             {sov.map((b, idx) => (
@@ -174,44 +174,44 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
       </div>
 
       {/* SoV Table */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-800">
-          <h3 className="font-semibold text-white">Share of Voice Breakdown</h3>
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="font-semibold text-gray-900">Share of Voice Breakdown</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-800/50">
-              <tr className="text-gray-400 text-xs uppercase tracking-wide">
-                <th className="text-left px-6 py-3">Brand</th>
-                <th className="text-right px-4 py-3">Overall SoV</th>
-                <th className="text-right px-4 py-3">Claude SoV</th>
-                <th className="text-right px-4 py-3">ChatGPT SoV</th>
-                <th className="text-right px-4 py-3">Gemini SoV</th>
-                <th className="text-right px-6 py-3">WoW Change</th>
+            <thead className="bg-gray-50">
+              <tr className="text-gray-500 text-xs uppercase tracking-wide border-b border-gray-200">
+                <th className="text-left px-6 py-3 font-medium">Brand</th>
+                <th className="text-right px-4 py-3 font-medium">Overall SoV</th>
+                <th className="text-right px-4 py-3 font-medium">Claude SoV</th>
+                <th className="text-right px-4 py-3 font-medium">ChatGPT SoV</th>
+                <th className="text-right px-4 py-3 font-medium">Gemini SoV</th>
+                <th className="text-right px-6 py-3 font-medium">WoW Change</th>
               </tr>
             </thead>
             <tbody>
               {sov.map((b, idx) => (
-                <tr key={b.brand.id} className="border-t border-gray-800">
+                <tr key={b.brand.id} className="border-t border-gray-100 hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <span
                         className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ background: BRAND_COLORS[idx % BRAND_COLORS.length] }}
                       />
-                      <span className="text-white font-medium">{b.brand.name}</span>
+                      <span className="text-gray-900 font-medium">{b.brand.name}</span>
                     </div>
                   </td>
-                  <td className="text-right px-4 py-4 text-indigo-300 font-mono font-medium">
+                  <td className="text-right px-4 py-4 text-indigo-600 font-mono font-medium">
                     {b.overall_sov}%
                   </td>
-                  <td className="text-right px-4 py-4 text-gray-300 font-mono">
+                  <td className="text-right px-4 py-4 text-gray-700 font-mono">
                     {b.by_engine["claude"]?.sov ?? 0}%
                   </td>
-                  <td className="text-right px-4 py-4 text-gray-300 font-mono">
+                  <td className="text-right px-4 py-4 text-gray-700 font-mono">
                     {b.by_engine["chatgpt"]?.sov ?? 0}%
                   </td>
-                  <td className="text-right px-4 py-4 text-gray-300 font-mono">
+                  <td className="text-right px-4 py-4 text-gray-700 font-mono">
                     {b.by_engine["gemini"]?.sov ?? 0}%
                   </td>
                   <td className="text-right px-6 py-4">
@@ -219,9 +219,9 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
                       <span
                         className={`font-mono text-sm font-medium ${
                           b.sov_change > 0
-                            ? "text-green-400"
+                            ? "text-green-600"
                             : b.sov_change < 0
-                            ? "text-red-400"
+                            ? "text-red-600"
                             : "text-gray-400"
                         }`}
                       >
@@ -229,7 +229,7 @@ export function CompetitorsTab({ projectId }: { projectId: number }) {
                         {b.sov_change}%
                       </span>
                     ) : (
-                      <span className="text-gray-600 text-xs">—</span>
+                      <span className="text-gray-400 text-xs">—</span>
                     )}
                   </td>
                 </tr>

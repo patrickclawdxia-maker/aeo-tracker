@@ -48,7 +48,7 @@ export function OverviewTab({
 }) {
   if (results.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         No results yet. Run an analysis to see brand visibility data.
       </div>
     );
@@ -67,8 +67,8 @@ export function OverviewTab({
   return (
     <div className="space-y-8">
       {/* Bar Chart */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
           Brand Visibility (Mention Rate %)
         </h3>
         <ResponsiveContainer width="100%" height={Math.max(200, results.length * 50)}>
@@ -77,29 +77,29 @@ export function OverviewTab({
             layout="vertical"
             margin={{ left: 20, right: 20, top: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
             <XAxis
               type="number"
               domain={[0, 100]}
               tickFormatter={(v) => `${v}%`}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#374151" }}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+              axisLine={{ stroke: "#e5e7eb" }}
             />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fill: "#d1d5db", fontSize: 13 }}
+              tick={{ fill: "#374151", fontSize: 13 }}
               axisLine={false}
               width={100}
             />
             <Tooltip
               formatter={(value) => [`${value}%`, "Mention Rate"]}
               contentStyle={{
-                background: "#1f2937",
-                border: "1px solid #374151",
+                background: "white",
+                border: "1px solid #e5e7eb",
                 borderRadius: 8,
               }}
-              labelStyle={{ color: "#f9fafb" }}
+              labelStyle={{ color: "#111827" }}
             />
             <Bar dataKey="mention_rate" radius={[0, 4, 4, 0]}>
               {chartData.map((_, idx) => (
@@ -123,7 +123,7 @@ export function OverviewTab({
             return (
               <div
                 key={r.brand.id}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+                className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -134,7 +134,7 @@ export function OverviewTab({
                           background: BRAND_COLORS[idx % BRAND_COLORS.length],
                         }}
                       />
-                      <h4 className="font-semibold text-white">
+                      <h4 className="font-semibold text-gray-900">
                         {r.brand.name}
                       </h4>
                     </div>
@@ -144,19 +144,19 @@ export function OverviewTab({
 
                 <div className="grid grid-cols-3 gap-3 mt-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-indigo-400">
+                    <div className="text-2xl font-bold text-indigo-600">
                       {r.overall.mention_rate}%
                     </div>
                     <div className="text-xs text-gray-500 mt-1">Visibility</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">
+                    <div className="text-2xl font-bold text-violet-600">
                       #{r.overall.avg_position > 0 ? r.overall.avg_position.toFixed(1) : "—"}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">Avg Position</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-teal-400">
+                    <div className="text-2xl font-bold text-emerald-600">
                       {sov ? `${sov.overall_sov}%` : "—"}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">Share of Voice</div>
@@ -164,10 +164,10 @@ export function OverviewTab({
                       <div
                         className={`text-xs font-medium mt-0.5 ${
                           sov.sov_change > 0
-                            ? "text-green-400"
+                            ? "text-green-600"
                             : sov.sov_change < 0
-                            ? "text-red-400"
-                            : "text-gray-500"
+                            ? "text-red-600"
+                            : "text-gray-400"
                         }`}
                       >
                         {sov.sov_change > 0 ? "+" : ""}
@@ -177,7 +177,7 @@ export function OverviewTab({
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-gray-800">
+                <div className="mt-4 pt-4 border-t border-gray-100">
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
                     <span>Sentiment</span>
                     <span>
@@ -186,7 +186,7 @@ export function OverviewTab({
                       {r.overall.sentiment_breakdown.negative}✗
                     </span>
                   </div>
-                  <div className="flex h-2 rounded-full overflow-hidden bg-gray-800">
+                  <div className="flex h-2 rounded-full overflow-hidden bg-gray-100">
                     {r.overall.total_mentions > 0 && (
                       <>
                         <div
@@ -200,7 +200,7 @@ export function OverviewTab({
                           }}
                         />
                         <div
-                          className="bg-gray-500"
+                          className="bg-gray-300"
                           style={{
                             width: `${
                               (r.overall.sentiment_breakdown.neutral /
@@ -210,7 +210,7 @@ export function OverviewTab({
                           }}
                         />
                         <div
-                          className="bg-red-500"
+                          className="bg-red-400"
                           style={{
                             width: `${
                               (r.overall.sentiment_breakdown.negative /

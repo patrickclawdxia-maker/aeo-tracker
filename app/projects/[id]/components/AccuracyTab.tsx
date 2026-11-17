@@ -35,17 +35,17 @@ function ResponseCard({ check }: { check: AccuracyCheck }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-gray-800/60 rounded-lg p-4 space-y-2 border border-red-900/50">
+    <div className="bg-red-50 border-l-4 border-red-400 rounded-r-lg p-4 space-y-2">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-700 text-gray-300">
+        <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
           {engineLabel(check.engine_id)}
         </span>
-        <span className="text-gray-400 text-xs">"{check.query_text}"</span>
+        <span className="text-gray-500 text-xs">&ldquo;{check.query_text}&rdquo;</span>
       </div>
 
       <ul className="space-y-1">
         {check.issues.map((issue, idx) => (
-          <li key={idx} className="text-sm text-red-300 flex items-start gap-2">
+          <li key={idx} className="text-sm text-red-800 flex items-start gap-2">
             <span className="mt-0.5 flex-shrink-0">⚠</span>
             <span>{issue}</span>
           </li>
@@ -55,12 +55,12 @@ function ResponseCard({ check }: { check: AccuracyCheck }) {
       <div>
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="text-indigo-400 hover:text-indigo-300 text-xs underline"
+          className="text-indigo-600 hover:text-indigo-700 text-xs underline"
         >
           {expanded ? "Hide response" : "View full response"}
         </button>
         {expanded && (
-          <div className="mt-2 bg-gray-900 rounded p-3 text-xs text-gray-400 max-h-48 overflow-y-auto whitespace-pre-wrap">
+          <div className="mt-2 bg-white border border-gray-200 rounded p-3 text-xs text-gray-600 max-h-48 overflow-y-auto whitespace-pre-wrap">
             {check.response_text}
           </div>
         )}
@@ -113,10 +113,10 @@ function BrandSection({
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-800 bg-gray-800/30 flex items-center justify-between gap-4">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between gap-4">
         <div>
-          <h4 className="font-semibold text-white text-lg">{brand.brand_name}</h4>
+          <h4 className="font-semibold text-gray-900 text-lg">{brand.brand_name}</h4>
           {brand.checks.length > 0 && (
             <p className="text-xs text-gray-500 mt-0.5">
               {inaccurateChecks.length} issue{inaccurateChecks.length !== 1 ? "s" : ""} found across {brand.checks.length} checked response{brand.checks.length !== 1 ? "s" : ""}
@@ -125,7 +125,7 @@ function BrandSection({
         </div>
         <button
           onClick={() => { setEditingFacts(true); setFactsText(brand.facts || ""); }}
-          className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white transition-colors flex-shrink-0"
+          className="text-xs px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 border border-gray-300 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
         >
           {brand.facts ? "Edit Brand Facts" : "Add Brand Facts"}
         </button>
@@ -134,8 +134,8 @@ function BrandSection({
       <div className="p-6 space-y-4">
         {/* Facts editor */}
         {editingFacts && (
-          <div className="bg-gray-800/60 rounded-xl p-4 space-y-3 border border-indigo-900/50">
-            <label className="block text-sm text-gray-400">
+          <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-200">
+            <label className="block text-sm text-gray-500">
               Verified facts about {brand.brand_name}
             </label>
             <textarea
@@ -143,20 +143,20 @@ function BrandSection({
               onChange={(e) => setFactsText(e.target.value)}
               rows={5}
               placeholder={`Enter verified facts, e.g.:\n- Founded in 2010 by Jane Smith\n- Headquartered in San Francisco\n- Provides B2B SaaS for logistics companies\n- Has 500+ enterprise customers`}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none placeholder-gray-400"
             />
-            {factsError && <p className="text-red-400 text-sm">{factsError}</p>}
+            {factsError && <p className="text-red-600 text-sm">{factsError}</p>}
             <div className="flex gap-2">
               <button
                 onClick={saveFacts}
                 disabled={savingFacts}
-                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium"
               >
                 {savingFacts ? "Saving…" : "Save Facts"}
               </button>
               <button
                 onClick={() => setEditingFacts(false)}
-                className="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium"
+                className="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium"
               >
                 Cancel
               </button>
@@ -166,7 +166,7 @@ function BrandSection({
 
         {/* Show current facts summary if not editing */}
         {!editingFacts && brand.facts && (
-          <div className="bg-gray-800/40 rounded-lg px-4 py-3 text-sm text-gray-400 border border-gray-700">
+          <div className="bg-gray-50 rounded-lg px-4 py-3 text-sm text-gray-600 border border-gray-200">
             <p className="text-xs text-gray-500 mb-1 font-medium uppercase tracking-wide">Verified Facts</p>
             <p className="whitespace-pre-line text-xs leading-relaxed">{brand.facts}</p>
           </div>
@@ -174,11 +174,11 @@ function BrandSection({
 
         {/* No facts state */}
         {!editingFacts && !brand.facts && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-400">
             <p>Add verified facts about your brand to enable accuracy monitoring</p>
             <button
               onClick={() => setEditingFacts(true)}
-              className="mt-3 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium"
+              className="mt-3 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
             >
               Add Brand Facts
             </button>
@@ -189,12 +189,12 @@ function BrandSection({
         {brand.facts && brand.checks.length > 0 && (
           <>
             {inaccurateChecks.length === 0 ? (
-              <div className="text-center py-6 text-green-400">
-                <p className="text-lg">✅ No accuracy issues detected in the latest run</p>
+              <div className="text-center py-6 bg-green-50 rounded-xl border border-green-200">
+                <p className="text-green-700">✅ No accuracy issues detected in the latest run</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <h5 className="text-sm font-medium text-red-400">
+                <h5 className="text-sm font-medium text-red-600">
                   {inaccurateChecks.length} inaccurate response{inaccurateChecks.length !== 1 ? "s" : ""} detected
                 </h5>
                 {inaccurateChecks.map((check) => (
@@ -206,9 +206,9 @@ function BrandSection({
         )}
 
         {brand.facts && brand.checks.length === 0 && !editingFacts && (
-          <div className="text-center py-6 text-gray-500">
+          <div className="text-center py-6 text-gray-400">
             <p className="text-sm">No accuracy checks run yet.</p>
-            <p className="text-xs text-gray-600 mt-1">Click &quot;Run Accuracy Check&quot; to analyze the latest run.</p>
+            <p className="text-xs text-gray-400 mt-1">Click &quot;Run Accuracy Check&quot; to analyze the latest run.</p>
           </div>
         )}
       </div>
@@ -274,7 +274,7 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
 
   if (loading) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-gray-400">
         <span className="animate-spin inline-block mr-2">⟳</span>Loading accuracy data…
       </div>
     );
@@ -285,7 +285,7 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">AI Answer Accuracy Monitoring</h3>
+          <h3 className="text-lg font-semibold text-gray-900">AI Answer Accuracy Monitoring</h3>
           <p className="text-sm text-gray-500 mt-1">
             Detect factually incorrect claims AI engines make about your brand
           </p>
@@ -293,7 +293,7 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
         <button
           onClick={runAccuracyCheck}
           disabled={running}
-          className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-2"
+          className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 flex items-center gap-2"
         >
           {running ? (
             <>
@@ -308,7 +308,7 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
 
       {/* Summary stats */}
       {totalResponses > 0 && (
-        <div className={`rounded-xl p-4 text-sm ${totalIssues > 0 ? "bg-red-950/40 border border-red-800 text-red-300" : "bg-green-950/40 border border-green-800 text-green-300"}`}>
+        <div className={`rounded-xl p-4 text-sm ${totalIssues > 0 ? "bg-red-50 border border-red-200 text-red-700" : "bg-green-50 border border-green-200 text-green-700"}`}>
           {totalIssues > 0
             ? `⚠️ ${totalIssues} issue${totalIssues !== 1 ? "s" : ""} found across ${totalResponses} checked response${totalResponses !== 1 ? "s" : ""}`
             : `✅ No accuracy issues detected across ${totalResponses} checked response${totalResponses !== 1 ? "s" : ""}`
@@ -317,13 +317,13 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
       )}
 
       {runResult && (
-        <div className="bg-indigo-950/40 border border-indigo-800 rounded-xl p-4 text-sm text-indigo-300">
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-sm text-indigo-700">
           ✓ {runResult}
         </div>
       )}
 
       {runError && (
-        <div className="bg-red-950 border border-red-800 rounded-xl p-4 text-red-300 text-sm">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
           {runError}
         </div>
       )}
@@ -341,7 +341,7 @@ export function AccuracyTab({ projectId }: { projectId: number }) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 text-gray-500 bg-gray-900 border border-gray-800 rounded-xl">
+        <div className="text-center py-16 text-gray-400 bg-white border border-gray-200 rounded-xl shadow-sm">
           <p>No brands found. Add brands in Settings to get started.</p>
         </div>
       )}

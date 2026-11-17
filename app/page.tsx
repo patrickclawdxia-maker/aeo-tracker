@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
+import { TryWidget } from "./components/TryWidget";
 
 const APP_URL = process.env.NEXTAUTH_URL || "https://aeo-tracker.vercel.app";
 
@@ -181,45 +182,8 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div id="demo" className="animate-float rounded-3xl border border-white/80 bg-white/90 p-5 shadow-2xl shadow-indigo-200/70 backdrop-blur">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <div className="text-sm font-semibold text-gray-950">AI Visibility</div>
-                <div className="text-xs text-gray-400">Weekly brand rank</div>
-              </div>
-              <div className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600">+18%</div>
-            </div>
-            <div className="space-y-4">
-              {[
-                ["Acme", "82%", "from-indigo-500 to-violet-500"],
-                ["Northstar", "64%", "from-emerald-500 to-teal-400"],
-                ["Orbit", "48%", "from-amber-500 to-pink-500"],
-                ["Atlas", "36%", "from-blue-500 to-indigo-400"],
-              ].map(([name, value, gradient]) => (
-                <div key={name}>
-                  <div className="mb-1.5 flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-700">{name}</span>
-                    <span className="font-semibold text-gray-950">{value}</span>
-                  </div>
-                  <div className="h-3 overflow-hidden rounded-full bg-gray-100">
-                    <div className={`h-full rounded-full bg-gradient-to-r ${gradient}`} style={{ width: value }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="rounded-full bg-[#10a37f]/10 px-3 py-1 text-xs font-semibold text-[#10a37f]">● ChatGPT</span>
-              <span className="rounded-full bg-[#4285f4]/10 px-3 py-1 text-xs font-semibold text-[#4285f4]">● Gemini</span>
-              <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-600">● Claude</span>
-            </div>
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              {["Mentions", "Citations", "SOV"].map((label, idx) => (
-                <div key={label} className="rounded-2xl bg-gray-50 p-3">
-                  <div className="text-lg font-bold text-gray-950">{[217, 64, "41%"][idx]}</div>
-                  <div className="text-xs text-gray-400">{label}</div>
-                </div>
-              ))}
-            </div>
+          <div id="demo" className="w-full">
+            <TryWidget />
           </div>
         </div>
       </section>

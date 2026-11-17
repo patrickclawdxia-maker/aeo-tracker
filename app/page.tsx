@@ -138,50 +138,72 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <section className="mesh-bg relative overflow-hidden">
-        <div className="grid-pattern absolute inset-0 opacity-70" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 lg:py-24">
-          {/* Top: headline centered or left */}
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-white/75 px-4 py-2 text-sm font-medium text-indigo-700 shadow-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+      {/* HERO — dark, full bleed */}
+      <section className="relative overflow-hidden" style={{ background: "linear-gradient(160deg, #0d0a1e 0%, #130d2e 50%, #0f0c29 100%)" }}>
+        {/* Ambient glows */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[800px] rounded-full bg-indigo-700/20 blur-[120px]" />
+          <div className="absolute top-1/2 -right-40 h-96 w-96 rounded-full bg-violet-700/15 blur-[100px]" />
+          <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-indigo-900/30 blur-[80px]" />
+          {/* Subtle grid */}
+          <div className="absolute inset-0 opacity-[0.04]" style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
+            backgroundSize: "60px 60px"
+          }} />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl px-6 pt-20 pb-6 lg:pt-28 lg:pb-8">
+          {/* Badge */}
+          <div className="mb-8 flex justify-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-sm font-medium text-indigo-300 backdrop-blur-sm">
+              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
               The SEMrush for the AI era
             </div>
-            <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-gray-950 sm:text-6xl lg:text-7xl">
-              Know where your brand<br className="hidden sm:block" /> ranks in <span className="text-gradient">AI search</span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-xl">
-              Track mentions, citations, and share of voice across ChatGPT, Gemini, and Claude.
-            </p>
           </div>
 
-          {/* Chat widget — full width, constrained */}
+          {/* Headline */}
+          <h1 className="mb-6 text-center text-5xl font-extrabold leading-[1.06] tracking-tight text-white sm:text-6xl lg:text-7xl">
+            Know where your brand<br className="hidden sm:block" /> ranks in{" "}
+            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              AI search
+            </span>
+          </h1>
+
+          {/* Subline */}
+          <p className="mb-10 text-center text-lg leading-8 text-white/50 sm:text-xl">
+            Track mentions, citations, and share of voice across ChatGPT, Gemini, and Claude.
+          </p>
+
+          {/* Widget — prominent, wide */}
           <div id="demo" className="mx-auto max-w-2xl">
             <TryWidget />
           </div>
 
           {/* Social proof */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <div className="flex -space-x-3">
+          <div className="mt-8 mb-6 flex flex-wrap items-center justify-center gap-5">
+            <div className="flex -space-x-2.5">
               {["M", "A", "J", "S"].map((initial, idx) => (
                 <div
                   key={initial}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-gray-900 to-gray-500 text-sm font-bold text-white shadow-sm"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#130d2e] bg-gradient-to-br from-indigo-500 to-violet-700 text-xs font-bold text-white shadow-sm"
                   style={{ transform: `translateY(${idx % 2 === 0 ? 0 : 2}px)` }}
                 >
                   {initial}
                 </div>
               ))}
             </div>
-            <p className="text-sm font-medium text-gray-500">500+ marketers tracking AI visibility</p>
+            <p className="text-sm text-white/40">500+ marketers tracking AI visibility</p>
             <Link
               href="/login"
-              className="rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:border-indigo-200 hover:text-indigo-700"
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/60 transition-all hover:border-indigo-400/40 hover:bg-white/10 hover:text-white/90"
             >
-              Or sign up free →
+              Sign up free →
             </Link>
           </div>
         </div>
+
+        {/* Bottom fade into next section */}
+        <div className="h-16 bg-gradient-to-b from-transparent to-gray-50" />
       </section>
 
       <section className="border-y border-gray-200 bg-gray-50 px-6 py-6">

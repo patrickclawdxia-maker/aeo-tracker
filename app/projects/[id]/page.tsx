@@ -163,9 +163,9 @@ export default function ProjectPage({
   return (
     <div>
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 rounded-2xl border border-gray-100 bg-gradient-to-br from-white to-indigo-50/30 p-6 shadow-sm">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-          <Link href="/" className="hover:text-gray-700 transition-colors">
+          <Link href="/dashboard" className="hover:text-gray-700 transition-colors">
             Projects
           </Link>
           <span>/</span>
@@ -174,10 +174,10 @@ export default function ProjectPage({
 
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900">
               {project.project.name}
             </h1>
-            <div className="flex gap-4 mt-2 text-sm text-gray-500">
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
               <span>
                 {project.brands.length} brand
                 {project.brands.length !== 1 ? "s" : ""}
@@ -201,6 +201,19 @@ export default function ProjectPage({
                   </span>
                 </>
               )}
+              <span className="hidden sm:inline">·</span>
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#10a37f]" />
+                ChatGPT
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#4285f4]" />
+                Gemini
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#d97706]" />
+                Claude
+              </span>
             </div>
           </div>
 
@@ -211,7 +224,7 @@ export default function ProjectPage({
               project.brands.length === 0 ||
               project.queries.length === 0
             }
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 flex-shrink-0 text-sm"
+            className="flex flex-shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-200 transition-all hover:shadow-indigo-300 disabled:opacity-50"
           >
             {running ? (
               <>
@@ -265,14 +278,14 @@ export default function ProjectPage({
       )}
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-gray-200 mb-6 overflow-x-auto bg-white">
+      <div className="sticky top-0 z-10 mb-6 flex gap-0 overflow-x-auto border-b border-gray-100 bg-white/95 shadow-sm backdrop-blur-sm">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => { setTab(t.id); trackEvent("tab_viewed", "navigation", { tab: t.id, projectId: params.id }); }}
-            className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+            className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
               tab === t.id
-                ? "border-indigo-600 text-indigo-600"
+                ? "rounded-t-lg border-indigo-600 bg-indigo-50/50 text-indigo-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >

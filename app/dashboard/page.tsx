@@ -19,6 +19,33 @@ interface QuotaData {
   referral_code: string;
 }
 
+const PROJECT_COLORS = [
+  "from-indigo-500 to-violet-500",
+  "from-emerald-500 to-teal-400",
+  "from-amber-500 to-pink-500",
+  "from-blue-500 to-indigo-400",
+  "from-rose-500 to-orange-400",
+];
+
+function relativeTime(dateString: string | null) {
+  if (!dateString) return "Never run";
+
+  const diffMs = Date.now() - new Date(dateString).getTime();
+  const minutes = Math.max(1, Math.floor(diffMs / 60000));
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+
+  return `${Math.floor(months / 12)}y ago`;
+}
+
 export default function Dashboard() {
   const { data: session } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -74,48 +101,51 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-white/70 bg-gradient-to-br from-white via-indigo-50/70 to-violet-50/60 p-7 shadow-sm">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-500 mt-1">
-            {session?.user?.name ? `Welcome back, ${session.user.name.split(" ")[0]}` : "Track brand visibility across AI search engines"}
+            <p className="mb-2 text-sm font-semibold text-indigo-600">Dashboard</p>
+            <h1 className="text-3xl font-bold text-gray-950">
+              {session?.user?.name ? `Welcome back, ${session.user.name.split(" ")[0]}` : "Welcome back"}
+            </h1>
+            <p className="mt-1 text-gray-500">
+              Track your brand across AI search engines
           </p>
         </div>
-        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowNew(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+            className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-indigo-300"
           >
-            + New Project
+            Create project
           </button>
         </div>
       </div>
 
       {/* Quota widget */}
       {quota && (
-        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Daily Queries</span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm font-semibold text-gray-800">Daily Queries</span>
+              <span className="text-sm font-medium text-gray-500">
                 {quota.used} / {quota.limit} used
               </span>
             </div>
-            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
               <div
                 className={`h-full rounded-full transition-all ${
                   quota.used / quota.limit >= 0.9
-                    ? "bg-red-500"
+                    ? "bg-gradient-to-r from-red-500 to-rose-400"
                     : quota.used / quota.limit >= 0.7
-                    ? "bg-amber-500"
-                    : "bg-indigo-500"
+                    ? "bg-gradient-to-r from-amber-500 to-orange-400"
+                    : "bg-gradient-to-r from-indigo-500 to-violet-500"
                 }`}
                 style={{ width: `${Math.min(100, Math.round((quota.used / quota.limit) * 100))}%` }}
               />
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0 bg-indigo-50 rounded-lg px-3 py-2">
+          <div className="flex shrink-0 items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2">
             <div className="text-right">
               <p className="text-xs text-gray-500 mb-1">Share to get +50 more queries</p>
               <code className="text-xs text-indigo-700 font-mono">
@@ -133,7 +163,7 @@ export default function Dashboard() {
       )}
 
       {showNew && (
-        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 mb-6">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-4">Create New Project</h2>
           <div className="flex gap-3">
             <input
@@ -148,7 +178,7 @@ export default function Dashboard() {
             <button
               onClick={createProject}
               disabled={creating || !newName.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
             >
               {creating ? "Creating…" : "Create"}
             </button>
@@ -165,44 +195,57 @@ export default function Dashboard() {
       {loading ? (
         <div className="text-center py-16 text-gray-400">Loading…</div>
       ) : projects.length === 0 ? (
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
-          <div className="text-4xl mb-4">📊</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="rounded-3xl border border-dashed border-indigo-200 bg-white px-6 py-16 text-center shadow-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-100 text-3xl">
+            📊
+          </div>
+          <h2 className="mb-2 text-xl font-semibold text-gray-900">
             No projects yet
           </h2>
-          <p className="text-gray-500">
+          <p className="mx-auto max-w-md text-gray-500">
             Create your first project to start tracking brand visibility in AI
             engines.
           </p>
+          <button
+            onClick={() => setShowNew(true)}
+            className="mt-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5"
+          >
+            Create first project
+          </button>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p) => (
+          {projects.map((p, idx) => (
             <Link
               key={p.id}
               href={`/projects/${p.id}`}
-              className="bg-white border border-gray-200 hover:border-indigo-300 hover:shadow-md rounded-xl p-5 transition-all group"
+              className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-100/70"
             >
-              <h2 className="font-semibold text-gray-900 text-lg group-hover:text-indigo-600 transition-colors mb-3">
-                {p.name}
-              </h2>
-              <div className="flex gap-4 text-sm text-gray-500">
-                <span>🏷️ {p.brand_count} brands</span>
-                <span>🔍 {p.query_count} queries</span>
+              <div className={`h-1.5 bg-gradient-to-r ${PROJECT_COLORS[idx % PROJECT_COLORS.length]}`} />
+              <div className="p-5">
+                <div className="mb-5 flex items-start justify-between gap-3">
+                  <h2 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-indigo-600">
+                    {p.name}
+                  </h2>
+                  <span className="rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-400">
+                    {relativeTime(p.last_run)}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl bg-gray-50 p-3">
+                    <div className="text-2xl font-bold text-gray-950">{p.brand_count}</div>
+                    <div className="text-xs font-medium text-gray-400">Brands</div>
+                  </div>
+                  <div className="rounded-xl bg-gray-50 p-3">
+                    <div className="text-2xl font-bold text-gray-950">{p.query_count}</div>
+                    <div className="text-xs font-medium text-gray-400">Queries</div>
+                  </div>
+                </div>
+                <div className="mt-5 flex items-center justify-between text-xs font-medium text-gray-400">
+                  <span>Open project</span>
+                  <span className="text-indigo-500 transition-transform group-hover:translate-x-1">→</span>
+                </div>
               </div>
-              {p.last_run ? (
-                <p className="text-xs text-gray-400 mt-3">
-                  Last run:{" "}
-                  {new Date(p.last_run).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              ) : (
-                <p className="text-xs text-gray-400 mt-3">Never run</p>
-              )}
             </Link>
           ))}
         </div>

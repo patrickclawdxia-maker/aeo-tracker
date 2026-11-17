@@ -277,7 +277,10 @@ export function TryWidget() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Only auto-scroll after the user has interacted (not on initial load)
+    if (messages.length > 1) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   async function submit(value?: string) {

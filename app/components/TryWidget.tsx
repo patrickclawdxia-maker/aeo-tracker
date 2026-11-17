@@ -25,7 +25,7 @@ interface TryResponse {
 
 type Message =
   | { role: "user"; text: string }
-  | { role: "assistant"; text?: string; result?: TryResponse; loading?: boolean; error?: string };
+  | { role: "assistant"; text?: string; result?: TryResponse; loading?: boolean; error?: string; cta?: boolean };
 
 const sentimentLabel: Record<Sentiment, { label: string; color: string; bg: string }> = {
   positive: { label: "Positive", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
@@ -135,6 +135,97 @@ function ResultCard({ result, brand }: { result: TryResponse; brand: string }) {
           Unlock full report — it&apos;s free →
         </Link>
         <p className="mt-2 text-center text-[11px] text-indigo-400">No credit card · takes 30 seconds</p>
+      </div>
+    </div>
+  );
+}
+
+function SaveCTA({ result }: { result: TryResponse }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [msg, setMsg] = useState("");
+
+  async function sendReport(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim() || status === "loading") return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/try/email-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), scanResult: result }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("done");
+        setMsg(data.message ?? "Report sent!");
+      } else {
+        setStatus("error");
+        setMsg("Something went wrong. Try again.");
+      }
+    } catch {
+      setStatus("error");
+      setMsg("Network error. Try again.");
+    }
+  }
+
+  return (
+    <div className="mt-3 w-full overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 shadow-md">
+      <div className="px-4 py-4">
+        <div className="mb-1 flex items-center gap-2">
+          <span className="text-base">💾</span>
+          <span className="text-sm font-bold text-indigo-900">Save your report</span>
+        </div>
+        <p className="mb-4 text-xs leading-5 text-indigo-700">
+          Get this report in your inbox + unlock Gemini, Claude, and 8 more queries — free.
+        </p>
+
+        {status === "done" ? (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center">
+            <div className="text-base">✅</div>
+            <p className="mt-1 text-sm font-semibold text-emerald-700">{msg}</p>
+            <Link href="/login" className="mt-2 inline-block text-xs font-semibold text-indigo-600 underline">
+              Create full account →
+            </Link>
+          </div>
+        ) : (
+          <>
+            <form onSubmit={sendReport} className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                required
+                className="flex-1 rounded-xl border border-indigo-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading" || !email.trim()}
+                className="rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 hover:shadow-md transition-all whitespace-nowrap"
+              >
+                {status === "loading" ? (
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                  </svg>
+                ) : "Send →"}
+              </button>
+            </form>
+            {status === "error" && <p className="mt-1.5 text-xs text-red-500">{msg}</p>}
+            <div className="mt-3 flex items-center gap-2">
+              <div className="flex-1 h-px bg-indigo-200" />
+              <span className="text-[11px] text-indigo-400">or</span>
+              <div className="flex-1 h-px bg-indigo-200" />
+            </div>
+            <Link
+              href="/login"
+              className="mt-3 block w-full rounded-xl border-2 border-indigo-300 bg-white py-2.5 text-center text-sm font-bold text-indigo-700 transition-all hover:border-indigo-500 hover:bg-indigo-50"
+            >
+              Sign up free — no credit card →
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );
@@ -256,6 +347,8 @@ export function TryWidget() {
         setMessages((prev) => [
           ...prev.slice(0, -1),
           { role: "assistant", result: data },
+          // Inject SaveCTA as next message
+          { role: "assistant", cta: true, result: data },
         ]);
       }
     } catch {
@@ -308,6 +401,8 @@ export function TryWidget() {
                       <Link href="/login" className="ml-2 font-semibold underline">Sign up free →</Link>
                     )}
                   </div>
+                ) : "cta" in msg && msg.cta && msg.result ? (
+                  <SaveCTA result={msg.result} />
                 ) : "result" in msg && msg.result ? (
                   <ResultCard result={msg.result} brand={msg.result.brand} />
                 ) : (

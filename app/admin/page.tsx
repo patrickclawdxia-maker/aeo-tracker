@@ -78,9 +78,14 @@ export default async function AdminPage({
       completed: parseInt(runStatsRes.rows[0].completed),
       failed: parseInt(runStatsRes.rows[0].failed),
     };
-    userRows = userTableRes.rows as typeof userRows;
-    newUsersLast7 = newUsersRes.rows.map((r: { day: string; count: string }) => ({
-      day: r.day,
+    userRows = userTableRes.rows.map((r: { email: string; project_count: number; last_project: unknown; created_at: unknown }) => ({
+      email: r.email,
+      project_count: Number(r.project_count),
+      last_project: r.last_project instanceof Date ? r.last_project.toISOString() : (r.last_project ? String(r.last_project) : null),
+      created_at: r.created_at instanceof Date ? r.created_at.toISOString() : String(r.created_at),
+    }));
+    newUsersLast7 = newUsersRes.rows.map((r: { day: unknown; count: string }) => ({
+      day: r.day instanceof Date ? r.day.toISOString().slice(0, 10) : String(r.day),
       count: parseInt(r.count),
     }));
   } catch {
@@ -139,8 +144,8 @@ export default async function AdminPage({
       `),
     ]);
 
-    dauRows = dauRes.rows.map((r: { day: string; dau: string }) => ({
-      day: r.day,
+    dauRows = dauRes.rows.map((r: { day: unknown; dau: string }) => ({
+      day: r.day instanceof Date ? r.day.toISOString().slice(0, 10) : String(r.day),
       dau: parseInt(r.dau),
     }));
     topEvents = topEventsRes.rows.map((r: { event: string; category: string; count: string }) => ({

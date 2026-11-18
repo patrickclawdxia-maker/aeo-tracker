@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 interface Brand {
   id: number;
   name: string;
+  aliases?: string[];
 }
 
 interface Query {
@@ -33,6 +34,9 @@ export function SettingsTab({
   const [newQuery, setNewQuery] = useState("");
   const [addingBrand, setAddingBrand] = useState(false);
   const [addingQuery, setAddingQuery] = useState(false);
+  // Aliases state: brandId → editing state
+  const [editingAliases, setEditingAliases] = useState<number | null>(null);
+  const [aliasInput, setAliasInput] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   // Schedule state
@@ -76,6 +80,32 @@ export function SettingsTab({
   async function deleteBrand(brandId: number) {
     await fetch(`/api/projects/${projectId}/brands/${brandId}`, {
       method: "DELETE",
+    });
+    onRefresh();
+  }
+
+  async function saveAliases(brandId: number, currentAliases: string[]) {
+    // Parse comma-separated input and merge with existing
+    const newOnes = aliasInput.split(",").map((a) => a.trim()).filter(Boolean);
+    const combined = currentAliases.concat(newOnes);
+    const seen2 = new Set<string>();
+    const merged = combined.filter((a) => { if (!a || seen2.has(a)) return false; seen2.add(a); return true; });
+    await fetch(`/api/projects/${projectId}/brands/${brandId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aliases: merged }),
+    });
+    setEditingAliases(null);
+    setAliasInput("");
+    onRefresh();
+  }
+
+  async function removeAlias(brandId: number, currentAliases: string[], alias: string) {
+    const updated = currentAliases.filter((a) => a !== alias);
+    await fetch(`/api/projects/${projectId}/brands/${brandId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aliases: updated }),
     });
     onRefresh();
   }
@@ -193,17 +223,82 @@ export function SettingsTab({
         </div>
         <div className="p-6 space-y-3">
           {brands.map((b) => (
-            <div
-              key={b.id}
-              className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-2"
-            >
-              <span className="text-gray-900">{b.name}</span>
-              <button
-                onClick={() => deleteBrand(b.id)}
-                className="text-gray-400 hover:text-red-600 transition-colors text-sm"
-              >
-                Remove
-              </button>
+            <div key={b.id} className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+              {/* Brand row */}
+              <div className="flex items-center justify-between px-4 py-2.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="font-medium text-gray-900 truncate">{b.name}</span>
+                  {b.aliases && b.aliases.length > 0 && (
+                    <span className="text-xs text-indigo-500 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-0.5 shrink-0">
+                      +{b.aliases.length} alias{b.aliases.length !== 1 ? "es" : ""}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => {
+                      setEditingAliases(editingAliases === b.id ? null : b.id);
+                      setAliasInput("");
+                    }}
+                    className="text-xs text-indigo-500 hover:text-indigo-700 transition-colors px-2 py-1 rounded hover:bg-indigo-50"
+                  >
+                    {editingAliases === b.id ? "Close" : "Aliases"}
+                  </button>
+                  <button
+                    onClick={() => deleteBrand(b.id)}
+                    className="text-gray-400 hover:text-red-600 transition-colors text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              {/* Aliases panel */}
+              {editingAliases === b.id && (
+                <div className="border-t border-gray-200 bg-white px-4 py-3 space-y-2">
+                  <p className="text-xs text-gray-500">
+                    Add alternate spellings, abbreviations, or common misspellings (comma-separated).
+                    <span className="ml-1 text-indigo-500">Fuzzy matching is on by default — aliases let you be more specific.</span>
+                  </p>
+                  {/* Existing aliases */}
+                  {b.aliases && b.aliases.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {b.aliases.map((alias) => (
+                        <span
+                          key={alias}
+                          className="inline-flex items-center gap-1 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs rounded-full px-2.5 py-0.5"
+                        >
+                          {alias}
+                          <button
+                            onClick={() => removeAlias(b.id, b.aliases ?? [], alias)}
+                            className="hover:text-red-500 transition-colors font-bold leading-none"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {/* Add new aliases */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder='e.g. "chatgpt, chat gpt, GPT-4"'
+                      value={aliasInput}
+                      onChange={(e) => setAliasInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && saveAliases(b.id, b.aliases ?? [])}
+                      className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    />
+                    <button
+                      onClick={() => saveAliases(b.id, b.aliases ?? [])}
+                      disabled={!aliasInput.trim()}
+                      className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           <div className="flex gap-2 mt-2">

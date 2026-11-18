@@ -35,7 +35,8 @@ export async function initDb() {
     CREATE TABLE IF NOT EXISTS tracked_brands (
       id SERIAL PRIMARY KEY,
       project_id INTEGER NOT NULL,
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      aliases TEXT[] NOT NULL DEFAULT '{}'
     );
     CREATE TABLE IF NOT EXISTS tracked_queries (
       id SERIAL PRIMARY KEY,
@@ -170,5 +171,10 @@ export async function initDb() {
       authority_score REAL NOT NULL DEFAULT 0,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `);
+
+  // Migrations: add columns that may not exist on existing DBs
+  await pool.query(`
+    ALTER TABLE tracked_brands ADD COLUMN IF NOT EXISTS aliases TEXT[] NOT NULL DEFAULT '{}';
   `);
 }

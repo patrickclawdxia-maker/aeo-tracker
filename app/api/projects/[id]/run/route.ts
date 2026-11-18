@@ -54,9 +54,9 @@ export async function POST(
   }
 
   const { rows: brands } = await pool.query(
-    "SELECT * FROM tracked_brands WHERE project_id = $1",
+    "SELECT id, name, COALESCE(aliases, '{}') as aliases FROM tracked_brands WHERE project_id = $1",
     [projectId]
-  ) as { rows: { id: number; name: string }[] };
+  ) as { rows: { id: number; name: string; aliases: string[] }[] };
 
   const { rows: queries } = await pool.query(
     "SELECT * FROM tracked_queries WHERE project_id = $1",

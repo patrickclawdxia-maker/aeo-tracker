@@ -18,7 +18,7 @@ import { AuthorityMapTab } from "./components/AuthorityMapTab";
 
 interface ProjectData {
   project: { id: number; name: string; created_at: string };
-  brands: Array<{ id: number; name: string }>;
+  brands: Array<{ id: number; name: string; aliases?: string[] }>;
   queries: Array<{ id: number; query: string }>;
   runs: Array<{ id: number; created_at: string; status: string }>;
 }

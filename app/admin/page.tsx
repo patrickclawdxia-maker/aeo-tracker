@@ -172,8 +172,6 @@ export default async function AdminPage({
 
   const now = new Date().toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
-    dateStyle: "medium",
-    timeStyle: "short",
   });
 
   return (
@@ -379,11 +377,11 @@ export default async function AdminPage({
                   <td className="py-1 pr-4 text-right text-indigo-600">{u.project_count}</td>
                   <td className="py-1 pr-4 text-right text-slate-400">
                     {u.last_project
-                      ? new Date(u.last_project).toLocaleDateString()
+                      ? new Date(u.last_project).toLocaleDateString("en-US")
                       : "—"}
                   </td>
                   <td className="py-1 text-right text-slate-400">
-                    {new Date(u.created_at).toLocaleDateString()}
+                    {new Date(u.created_at).toLocaleDateString("en-US")}
                   </td>
                 </tr>
               ))}

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUser } from '@clerk/nextjs';
+import { useUser, UserButton } from "@clerk/nextjs";
 
 interface QuotaData {
   used: number;
@@ -136,9 +136,13 @@ export function Sidebar() {
 
       <div className="rounded-2xl border border-gray-100 bg-gray-50 p-3">
         <div className="mb-3 flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-gray-900 to-gray-600 text-sm font-semibold text-white">
-            {initial}
-          </div>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-9 w-9",
+              },
+            }}
+          />
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-gray-900">{displayName}</div>
             <div className="text-xs text-gray-400">Free plan</div>

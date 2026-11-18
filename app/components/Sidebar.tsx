@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useUser } from '@clerk/nextjs';
 
 interface QuotaData {
   used: number;
@@ -69,25 +69,20 @@ function NavItem({
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { user } = useUser();
   const [quota, setQuota] = useState<QuotaData | null>(null);
 
   useEffect(() => {
-    if (!session?.user) return;
-
+    if (!user) return;
     fetch("/api/user/quota")
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data) setQuota(data);
-      })
+      .then((data) => { if (data) setQuota(data); })
       .catch(() => {});
-  }, [session]);
+  }, [user]);
 
   const displayName = useMemo(() => {
-    return session?.user?.name
-      ? session.user.name.split(" ")[0]
-      : session?.user?.email?.split("@")[0] ?? "Guest";
-  }, [session]);
+    return user?.firstName ?? user?.emailAddresses?.[0]?.emailAddress?.split("@")[0] ?? "Guest";
+  }, [user]);
 
   const initial = displayName.charAt(0).toUpperCase();
   const quotaPct = quota && quota.limit > 0

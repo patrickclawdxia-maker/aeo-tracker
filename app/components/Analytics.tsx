@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 
 function getOrCreateSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -15,7 +15,7 @@ function getOrCreateSessionId(): string {
 
 export function Analytics() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { userId } = useAuth();
   const lastPath = useRef<string>("");
 
   useEffect(() => {
@@ -33,16 +33,13 @@ export function Analytics() {
         sessionId: sid,
       }),
     }).catch(() => {});
-  }, [pathname, session]);
+  }, [pathname, userId]);
 
   return null;
 }
 
 export function useTrack() {
-  const { data: session } = useSession();
-
   return function trackEvent(event: string, category: string, properties: Record<string, unknown> = {}) {
-    void session; // used for context
     const sid = getOrCreateSessionId();
     fetch("/api/analytics/track", {
       method: "POST",

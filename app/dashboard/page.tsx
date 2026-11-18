@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useUser } from '@clerk/nextjs';
 
 interface Project {
   id: number;
@@ -47,7 +47,7 @@ function relativeTime(dateString: string | null) {
 }
 
 export default function Dashboard() {
-  const { data: session } = useSession();
+  const { user } = useUser();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
@@ -107,7 +107,7 @@ export default function Dashboard() {
         <div>
             <p className="mb-2 text-sm font-semibold text-indigo-600">Dashboard</p>
             <h1 className="text-3xl font-bold text-gray-950">
-              {session?.user?.name ? `Welcome back, ${session.user.name.split(" ")[0]}` : "Welcome back"}
+              {user?.firstName ? `Welcome back, ${user.firstName}` : "Welcome back"}
             </h1>
             <p className="mt-1 text-gray-500">
               Track your brand across AI search engines

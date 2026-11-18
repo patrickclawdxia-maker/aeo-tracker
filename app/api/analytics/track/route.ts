@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { track, trackPageView } from "@/lib/analytics";
-import { auth } from "@/auth";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
-    const userId = session?.user?.id ? parseInt(session.user.id) : null;
+    const { userId: clerkId } = await auth();
+    // Use null for analytics — we just track presence, not tied to integer userId
+    const userId = clerkId ? null : null;
     const body = await req.json();
     const { type, event, category, properties, path, referrer, sessionId } = body;
 
@@ -17,6 +18,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ ok: true }); // always 200
+    return NextResponse.json({ ok: true });
   }
 }

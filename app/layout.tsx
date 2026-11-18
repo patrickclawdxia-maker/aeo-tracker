@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "./components/Analytics";
 import { AppShell } from "./components/AppShell";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const APP_URL = process.env.NEXTAUTH_URL || "https://aeo-tracker.vercel.app";
+const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "https://aeo-tracker-navy.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -82,13 +82,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
-        <Providers>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
           <Analytics />
           <AppShell>{children}</AppShell>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

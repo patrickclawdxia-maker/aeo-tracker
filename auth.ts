@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
+import Facebook from "next-auth/providers/facebook";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
@@ -26,6 +28,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID ?? "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+    }),
+    Facebook({
+      clientId: process.env.FACEBOOK_CLIENT_ID ?? "",
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? "",
     }),
     Credentials({
       name: "credentials",
@@ -59,11 +69,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account }) {
-      // Handle Google OAuth — find or create user in DB
-      if (account?.provider === "google") {
-        const googleId = account.providerAccountId;
+      // Handle OAuth providers — find or create user in DB
+      const oauthProviders = ["google", "github", "facebook"];
+      if (account?.provider && oauthProviders.includes(account.provider)) {
+        const providerId = account.providerAccountId;
         const email = user.email!;
         const name = user.name ?? null;
+        const providerCol = `${account.provider}_id`;
 
         const { rows } = await pool.query(
           "SELECT * FROM users WHERE email = $1",
@@ -72,26 +84,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         let dbUser = rows[0] as DbUser | undefined;
 
         if (!dbUser) {
-          await pool.query(
-            "INSERT INTO users (email, name, google_id) VALUES ($1, $2, $3)",
-            [email, name, googleId]
-          );
+          // New user — insert, with google_id col for google, otherwise just email+name
+          if (account.provider === "google") {
+            await pool.query(
+              "INSERT INTO users (email, name, google_id) VALUES ($1, $2, $3)",
+              [email, name, providerId]
+            );
+          } else {
+            // github/facebook don't have dedicated columns yet — store in google_id as fallback
+            // or just create without provider id (email is the key)
+            await pool.query(
+              "INSERT INTO users (email, name) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING",
+              [email, name]
+            );
+          }
           const { rows: newRows } = await pool.query(
             "SELECT * FROM users WHERE email = $1",
             [email]
           );
           dbUser = newRows[0] as DbUser;
-        } else if (!dbUser.google_id) {
+        } else if (account.provider === "google" && !dbUser.google_id) {
           await pool.query(
             "UPDATE users SET google_id = $1 WHERE id = $2",
-            [googleId, dbUser.id]
+            [providerId, dbUser.id]
           );
         }
 
         // Store db user id in user object for jwt callback
         (user as { id: string }).id = String(dbUser.id);
 
-        await track("user_signed_in", "auth", { provider: "google" }, dbUser.id);
+        await track("user_signed_in", "auth", { provider: account.provider }, dbUser.id);
+        void providerCol; // suppress unused var warning
       }
       return true;
     },

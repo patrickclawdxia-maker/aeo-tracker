@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
+
+export const metadata: Metadata = {
+  title: "Create Free Account",
+  description: "Create a free AEO Tracker account to start monitoring your brand's visibility in ChatGPT, Gemini, and Claude. No credit card required.",
+  robots: { index: true, follow: true },
+};
 
 export default function SignUpPage() {
   return (

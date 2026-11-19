@@ -1,0 +1,48 @@
+# AEO Tracker — AI Engine Optimization & Brand Visibility
+
+**URL:** https://aeo-tracker-navy.vercel.app
+
+## What is AEO Tracker?
+
+AEO Tracker is a SaaS platform that monitors and improves brand visibility in AI-generated answers. As AI search engines like ChatGPT, Gemini, and Claude become primary discovery tools, brands need to understand how — and whether — they appear in AI responses. AEO Tracker is the SEMrush for the AI era.
+
+## Key Features
+
+- **Brand Visibility Tracking:** Measures how often your brand appears in AI-generated answers and where it ranks relative to competitors.
+- **Citation Tracking:** Identifies which URLs and sources AI engines cite when discussing your brand or category.
+- **Share of Voice:** Compares your brand's AI mention rate against competitors across topics and queries.
+- **Competitor Benchmarking:** Side-by-side analysis of sentiment, ranking position, and mention frequency vs. competing brands.
+- **Topical Authority Map:** Shows topics where AI engines trust your brand and gaps where competitors dominate.
+- **Accuracy Monitoring:** Flags inaccurate, outdated, or risky claims AI engines make about your brand.
+- **AI Crawler Visibility:** Checks whether AI search crawlers can access your critical pages.
+
+## Target Users
+
+- **Digital Marketers** who need to demonstrate AI visibility ROI.
+- **SEO Professionals** expanding into AI search optimization.
+- **Founders & Growth Teams** monitoring brand presence in AI-driven discovery.
+- **Content Strategists** identifying what content earns AI citations.
+
+## How It Works
+
+1. Create a project and add your brand plus competitors.
+2. Add the queries (buying questions, category terms) you want to track.
+3. AEO Tracker runs those queries across ChatGPT (GPT-4o), Google Gemini, and Anthropic Claude.
+4. Results are parsed for mentions, ranking position, sentiment, and citations.
+5. Track trends over time with daily or weekly scheduled runs.
+
+## AI Engines Supported
+
+- ChatGPT (GPT-4o) — OpenAI
+- Gemini — Google
+- Claude — Anthropic
+- Perplexity — coming soon
+
+## Pricing
+
+- **Free:** 1 project, 5 brands, 10 queries, 50 queries/day. No credit card required.
+- **Pro:** $49/month. Unlimited projects, brands, queries, scheduled runs, and API access.
+
+## About AEO (AI Engine Optimization)
+
+AEO is the discipline of optimizing digital presence for AI-generated answers rather than traditional search rankings. Where SEO targets crawlers and algorithms, AEO targets large language models — optimizing for citations, factual accuracy, structured data, and topical authority signals that influence how AI engines present your brand.

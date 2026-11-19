@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to AEO Tracker to monitor your brand's visibility in AI-generated answers from ChatGPT, Gemini, and Claude.",
+  robots: { index: false, follow: false },
+};
 
 export default function LoginPage() {
   return (

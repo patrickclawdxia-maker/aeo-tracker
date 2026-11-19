@@ -3,7 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { TryWidget } from "./components/TryWidget";
 
-const APP_URL = process.env.NEXTAUTH_URL || "https://aeo-tracker.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aeo-tracker-navy.vercel.app";
 
 export const metadata: Metadata = {
   title: "AEO Tracker — The SEMrush for the AI Era",
@@ -97,6 +97,46 @@ const jsonLd = {
   ],
 };
 
+const faqs = [
+  {
+    q: "What is AEO (AI Engine Optimization)?",
+    a: "AEO is the practice of optimizing your brand's visibility in AI-generated answers from tools like ChatGPT, Gemini, and Claude. Similar to SEO but for AI search — it focuses on ensuring AI engines mention, cite, and recommend your brand accurately.",
+  },
+  {
+    q: "How is AEO different from SEO?",
+    a: "SEO optimizes for search engine rankings. AEO optimizes for AI-generated answers. AI engines use different signals than search engines: citations, brand authority, topical coverage, structured data, and factual accuracy rather than backlinks and keyword density.",
+  },
+  {
+    q: "What AI engines does AEO Tracker support?",
+    a: "AEO Tracker currently supports ChatGPT (GPT-4o), Google Gemini, and Anthropic Claude. Perplexity support is coming soon.",
+  },
+  {
+    q: "How often does AEO Tracker run queries?",
+    a: "You can run queries on-demand at any time, or schedule automated daily or weekly runs. Each run queries all supported AI engines simultaneously.",
+  },
+  {
+    q: "Is there a free plan?",
+    a: "Yes. The free plan includes 1 project, 5 brands, 10 queries, and 50 queries per day. No credit card required to get started.",
+  },
+  {
+    q: "What data does AEO Tracker collect?",
+    a: "AEO Tracker tracks whether your brand is mentioned in AI responses, its ranking position, sentiment, citations (URLs referenced by AI engines), and share of voice compared to competitors.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: a,
+    },
+  })),
+};
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -104,6 +144,11 @@ export default function LandingPage() {
         id="json-ld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Script
+        id="faq-json-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <nav className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -323,6 +368,24 @@ export default function LandingPage() {
                 Start Pro
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="px-6 py-24 bg-white">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-12 text-center">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-950">Frequently asked questions</h2>
+            <p className="mt-4 text-lg text-gray-500">Everything you need to know about AEO Tracker and AI Engine Optimization.</p>
+          </div>
+          <div className="space-y-4">
+            {faqs.map(({ q, a }) => (
+              <div key={q} className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
+                <h3 className="text-base font-semibold text-gray-950">{q}</h3>
+                <p className="mt-2 text-sm leading-6 text-gray-600">{a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
